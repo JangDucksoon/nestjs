@@ -3,7 +3,7 @@
     import type Product from '../../types/Product';
     import properties from '../../property/config'
     import {axiosInstance} from '../../module/axiosConfig';
-    import { Link } from 'svelte-routing';
+    import { Link, navigate } from 'svelte-routing';
     import messageModule from '../../module/swalConfig';
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
     import { progress } from '../../store';
@@ -39,7 +39,8 @@
 </script>
 
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Product List</h1>
+    <!--<h1 class="text-3xl font-bold mb-6">Product List</h1>-->
+    <button type="button" class="btn-green" on:click={() => navigate('/product/register')}>Registry</button>
 
     {#if $progress !== 0}
         <p class="text-center text-4xl font-bold mb-4">{$progress}%</p>
@@ -50,7 +51,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {#each products as product (product.id)}
             <Link to={`/product/${product.id}`} class="block">
-            <div id="{`product-${product.id}`}" class="product-item bg-white rounded-lg shadow-md overflow-hidden">
+            <div id="{`product-${product.id}`}" class="product-item bg-white rounded-lg shadow-md overflow-hidden" title={product.name}>
                 <img src={properties.API_SERVER + '/' + product.image_url} alt={product.name} class="w-full h-48 object-contain" />
                 <div class="p-4">
                     <h2 class="text-xl font-semibold mb-2">{product.name}</h2>

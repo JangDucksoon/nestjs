@@ -27,9 +27,12 @@ export const deleteImage = async (delFilePath: string) => {
         return true;
   
     } catch(error) {
-  
-        console.log(error);
-        return false;
-  
+        if (error.code === 'ENOENT') {  //파일이 이미 존재하지 않음
+            console.log('image already does not exist');
+            return true;
+        } else {
+            console.log(error);
+            return false;
+        }
     }
 }

@@ -7,6 +7,7 @@
     import ProductModify from "./routes/product/ProductModify.svelte";
     import { progress } from "./store";
     import ProgressLinear from "./components/ProgressLinear/ProgressLinear.svelte";
+    import ProductRegister from "./routes/product/ProductRegister.svelte";
 
     export let url: string = '';
 </script>
@@ -36,5 +37,6 @@
         <Route path='/product/:id/modify' let:params>
             <ProductModify id={+params.id}/>
         </Route>
+        <Route path='/product/register' component={ProductRegister}/>
     </main>
 </Router>

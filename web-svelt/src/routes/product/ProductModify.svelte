@@ -33,11 +33,6 @@
     let error: string | null = null;
     let thumbnail: string | null = null;
 
-    const coonvertToNumber = (evt: Event) => {
-        const input = evt.target as HTMLInputElement;
-        input.value = input.value.replace(/\D/g, '');
-    }
-
     const getProduct = async (id: number) => {
         commonModule.increaseProgress(1);
         axiosInstance
@@ -102,7 +97,7 @@
                         navigate(`/product/${id}`),
                     );
                 } else {
-                    messageModule.error("error", null);
+                    messageModule.error("error");
                 }
             } else {
                 messageModule.alert("There are no changes.", null, 'warning');
@@ -116,7 +111,7 @@
 </script>
 
 {#if $progress !== 0}
-    <p class="text-center text-4xl font-bold mb-4">{$progress}</p>
+    <p class="text-center text-4xl font-bold mb-4">{$progress}%</p>
     <ProgressLinear color="purple" progress={$progress}/>
 {:else if error}
     <p class="text-center text-red-500">{error}</p>
@@ -130,13 +125,13 @@
             <div class="flex-1">
                 <form class="w-full mx-auto" on:submit|preventDefault={submitHandler}>
                     <div class="mb-10">
-                        <TextField label="Name" outlined hint="Wrtie the product name here" bind:value={product.name} />
+                        <TextField label="Name" outlined hint="Wrtie the product name here" bind:value={product.name} required/>
                     </div>
                     <div class="mb-10">
-                        <TextField label="Description" outlined hint="Wrtie the product description here" textarea rows={5} bind:value={product.description} />
+                        <TextField label="Description" outlined hint="Wrtie the product description here" textarea rows={5} bind:value={product.description} required/>
                     </div>
                     <div class="mb-10">
-                        <TextField label="Price" outlined hint="Wrtie the product price here" bind:value={product.price} />
+                        <TextField label="Price" outlined hint="Wrtie the product price here" bind:value={product.price} required on:input={commonModule.coonvertToNumber}/>
                     </div>
                     <div class="mb-10">
                         <label for="image" class="block mb-2">Image:</label>

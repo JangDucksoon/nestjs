@@ -7,7 +7,7 @@
     export let recordPerPage: number = 10;
     export let selectFunc: Function;
     export let startIndex: number = 0; //페이지 시작인덱스 >나 <를 눌렀을때의 첫 페이지 인덱스
-    let totalPageSize: number = parseInt(((totalCount - 1)/recordPerPage) + 1);
+    let totalPageSize: number = parseInt((((totalCount - 1)/recordPerPage) + 1) + '');
 
     const defaultClasses = 'px-4 py-2 text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-100';
 
@@ -64,6 +64,6 @@
 
 <style lang="postcss">
     .active {
-        @apply text-white bg-blue-500 border
+        @apply text-white bg-blue-500 border;
     }
 </style>

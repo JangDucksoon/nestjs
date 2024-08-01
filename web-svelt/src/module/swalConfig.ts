@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 const messageModule = {
-    alert: (text: string, callback: Function|null, iconType: 'success'|'error'|'warning'|'info'|'question' = 'success') => {
+    alert: (text: string, callback: Function|null = null, iconType: 'success'|'error'|'warning'|'info'|'question' = 'success') => {
         Swal.fire({
             html: text,
             icon: iconType,
@@ -13,7 +13,7 @@ const messageModule = {
             }
         });
     },
-    confirm: (text: string, callback: Function|null, confirmText: string = '확인', cancelText: string = '취소') => {
+    confirm: (text: string, callback: Function|null = null, confirmText: string = '확인', cancelText: string = '취소') => {
         Swal.fire({
             html: text,
             icon: 'question',
@@ -27,7 +27,7 @@ const messageModule = {
             }
         });
     },
-    error: (text: string, callback: Function|null) => {
+    error: (text: string, callback: Function|null = null) => {
         Swal.fire({
             html: text,
             icon: 'error',
@@ -59,7 +59,7 @@ const messageModule = {
             }
         });
     },
-    reason: (text: string, callback: Function|null) => {
+    reason: (text: string, callback: Function|null = null) => {
         Swal.fire({
             title: text,
             input: "text",
