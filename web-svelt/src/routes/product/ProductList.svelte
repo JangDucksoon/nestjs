@@ -2,7 +2,7 @@
     import { onDestroy, onMount } from 'svelte';
     import type Product from '../../types/Product';
     import properties from '../../property/config'
-    import axiosInstance from '../../module/axiosConfig';
+    import {axiosInstance} from '../../module/axiosConfig';
     import { Link } from 'svelte-routing';
     import messageModule from '../../module/swalConfig';
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";

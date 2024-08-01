@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
-    import axiosInstance from "../../module/axiosConfig";
+    import {axiosMultipartInstance, axiosInstance} from "../../module/axiosConfig";
     import type Product from "../../types/Product";
     import { navigate } from "svelte-routing";
     import properties from "../../property/config";
@@ -95,13 +95,7 @@
 
                 Object.keys(modifiedProduct).forEach(key => formData.append(key, modifiedProduct[key]));
 
-                const res = await axiosInstance.patch(
-                    `/product/${id}`,
-                    formData,
-                    {headers: {
-                        "Content-Type": "multipart/form-data",
-                    }}
-                );
+                const res = await axiosMultipartInstance.patch(`/product/${id}`, formData);
 
                 if (res.status == 200) {
                     messageModule.alert("Successfully modified", () =>

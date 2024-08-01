@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
     import type Product from "../../types/Product";
-    import axiosInstance from "../../module/axiosConfig";
+    import { axiosInstance } from "../../module/axiosConfig";
     import properties from "../../property/config";
     import { navigate } from "svelte-routing";
     import messageModule from "../../module/swalConfig";
