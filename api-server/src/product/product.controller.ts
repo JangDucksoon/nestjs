@@ -55,7 +55,16 @@ export class ProductController {
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: string) {
+	async remove(@Param('id') id: string) {
+		const image_url = await this.productService.findPreImage(+id);	//기존에 등록된 image_url 찾기
+		
+		if (image_url) {
+			const deleteYn: boolean = await deleteImage(image_url.image_url);
+            if (!deleteYn) {
+                throw new BadRequestException('failed to delete file');
+			}
+		}
+
 		return this.productService.remove(+id);
 	}
 }

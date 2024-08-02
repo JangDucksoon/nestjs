@@ -59,6 +59,18 @@
         }
     }
 
+    const deleteHandler = () => {
+        messageModule.confirm('Are you sure you want to delete this product?', async (result: boolean) => {
+            if (!result) return;
+
+            const res = await axiosInstance.delete(`/product/${id}`);
+            
+            if (res.statusText === 'OK') {
+                messageModule.alert('Product deleted successfully!', () => navigate(`/product`),'success');
+            }
+        });
+    }
+
     const submitHandler = () => {
         messageModule.confirm('Would you like to save your changes?', async (result: boolean) => {
             if (!result) return;
@@ -139,7 +151,10 @@
                     </div>
                     <div class="mb-10 flex justify-between">
                         <button type="button" class="btn" on:click={() => navigate(`/product/${id}`)}>Back</button>
-                        <button type="submit" class="btn-green">Update Product</button>
+                        <div>
+                            <button type="button" class="btn-red" on:click={deleteHandler}>Delete Product</button>
+                            <button type="submit" class="btn-green">Update Product</button>
+                        </div>
                     </div>
                 </form>
             </div>
