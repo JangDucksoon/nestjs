@@ -12,9 +12,11 @@ import { LocalStarategy } from './local.strategy';
   imports: [
     TypeOrmModule.forFeature([Auth]),
     PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60m' },
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: process.env.JWT_SECRET,
+        signOptions: { expiresIn: '60m' },
+      }),
     })
   ],
   controllers: [AuthController],
