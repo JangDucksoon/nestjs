@@ -69,6 +69,30 @@
 <style>
     .product-item {
         transition: transform 0.3s ease-in-out;
+        height: 350px; /* 고정된 높이 설정 */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .product-item h2 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* 두 줄까지만 표시 */
+        -webkit-box-orient: vertical;
+        line-clamp: 2; /* 표준 속성으로 호환성을 높임 */
+        box-orient: vertical; /* 표준 속성으로 호환성을 높임 */
+    }
+
+    .product-item p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /* 두 줄까지만 표시 */
+        -webkit-box-orient: vertical;
+        line-clamp: 1; /* 표준 속성으로 호환성을 높임 */
+        box-orient: vertical; /* 표준 속성으로 호환성을 높임 */
     }
 
     .product-item:hover {
