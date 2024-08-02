@@ -1,3 +1,3 @@
 export const web_config = {
-    'webOrigin': 'http://localhost:5173'
+    'webOrigin': 'http://localhost:5173',
 }

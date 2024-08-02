@@ -5,9 +5,8 @@
     import ProductList from "./routes/product/ProductList.svelte";
     import Product from "./routes/product/Product.svelte";
     import ProductModify from "./routes/product/ProductModify.svelte";
-    import { progress } from "./store";
-    import ProgressLinear from "./components/ProgressLinear/ProgressLinear.svelte";
     import ProductRegister from "./routes/product/ProductRegister.svelte";
+    import Login from "./routes/auth/Login.svelte";
 
     export let url: string = '';
 </script>
@@ -22,6 +21,9 @@
             <Link to="/about" class="text-white hover:text-gray-300">About</Link>
         </li>
         <li>
+            <Link to="/login" class="text-white hover:text-gray-300">Login</Link>
+        </li>
+        <li>
             <Link to="/product" class="text-white hover:text-gray-300">Product</Link>
         </li>
     </ul>
@@ -30,6 +32,7 @@
     <main class="container mx-auto mt-8">
         <Route path='/' component={Home}/>
         <Route path='/about' component={About}/>
+        <Route path='/login' component={Login}/>
         <Route path='/product' component={ProductList}/>
         <Route path='/product/:id' let:params>
             <Product id={+params.id}/>

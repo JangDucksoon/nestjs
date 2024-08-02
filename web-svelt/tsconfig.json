@@ -20,7 +20,7 @@
   "exclude": [
     "node_modules",
     "src/components/**/*",
-    "src/utils/*"
+    "src/utils/*",
   ],
   "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
   "references": [{ "path": "./tsconfig.node.json" }]
