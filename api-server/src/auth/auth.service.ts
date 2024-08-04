@@ -32,4 +32,12 @@ export class AuthService {
 			refresh_token: this.jwtService.sign(payload, { expiresIn: '1d' })
         };
 	}
+
+	async refreshAccessToken(user: any) {
+		const payload = {username: user.username, sub: user.sub, auth: user.auth};
+        
+        return {
+            access_token: this.jwtService.sign(payload, { expiresIn: '60m' })
+        };
+	}
 }

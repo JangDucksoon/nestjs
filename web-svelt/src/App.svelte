@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {Router, Link, Route} from "svelte-routing";
+    import {Router, Link, Route, navigate} from "svelte-routing";
     import Home from "./routes/Home.svelte";
     import About from "./routes/About.svelte";
     import ProductList from "./routes/product/ProductList.svelte";
@@ -7,11 +7,24 @@
     import ProductModify from "./routes/product/ProductModify.svelte";
     import ProductRegister from "./routes/product/ProductRegister.svelte";
     import Login from "./routes/auth/Login.svelte";
+    import { accessToken, refreshToken } from "./store";
+    import messageModule from "./module/swalConfig";
 
-    export let url: string = '';
+    const logout = () => {
+        messageModule.confirm('Are you sure you want to logout?', (result: boolean) => {
+            if (!result) return;
+
+            accessToken.set(null);
+            refreshToken.set(null);
+
+            if (location.href.includes('/product')) {
+                navigate('/');
+            }
+        });
+    }
 </script>
 
-<Router {url}>
+<Router>
     <nav class="bg-gray-800 p-4">
     <ul class="flex space-x-4">
         <li>
@@ -20,9 +33,15 @@
         <li>
             <Link to="/about" class="text-white hover:text-gray-300">About</Link>
         </li>
-        <li>
-            <Link to="/login" class="text-white hover:text-gray-300">Login</Link>
-        </li>
+        {#if $accessToken}
+            <li>
+                <button type="button" class="text-white hover:text-gray-300" on:click={logout}>Logout</button>
+            </li>
+        {:else}
+            <li>
+                <Link to="/login" class="text-white hover:text-gray-300">Login</Link>
+            </li>
+        {/if}
         <li>
             <Link to="/product" class="text-white hover:text-gray-300">Product</Link>
         </li>

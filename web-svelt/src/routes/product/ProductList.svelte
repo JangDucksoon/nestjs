@@ -24,11 +24,14 @@
         const skip = cPageIndex * recordPerPage;
         const limit = recordPerPage;
 
-        axiosInstance.get<[Product[], number]>(`/product?skip=${skip}&limit=${limit}`).then(res => {
-            [products, totalCount] = res.data
-        }).catch(err => {
-            messageModule.error(err, () => error = err)
-        });
+        try {
+            const res = await axiosInstance.get<[Product[], number]>(`/product?skip=${skip}&limit=${limit}`);
+            if (res.status === 200) {
+                [products, totalCount] = res.data
+            }
+        } catch (error: any) {
+            error = error.message;
+        }
     }
 
     onMount(() => getProductList());

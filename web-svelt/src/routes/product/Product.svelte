@@ -14,11 +14,16 @@
     let product: Product | null = null;
     let error: string | null = null;
 
-    const getProduct = (id: number) => {
+    const getProduct = async (id: number) => {
         commonModule.increaseProgress(1);
-        axiosInstance.get<Product>(`product/${id}`).then(res => product = res.data).catch(err => {
-            messageModule.error(err, () => error = err);
-        });
+        try {
+            const res = await axiosInstance.get<Product>(`product/${id}`);
+            if (res.status === 200) {
+                product = res.data;
+            }
+        } catch (error: any) {
+            error = error.message;
+        }
     }
 
     onMount(() => getProduct(id))

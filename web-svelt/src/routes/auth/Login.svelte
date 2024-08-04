@@ -1,7 +1,9 @@
 <script lang="ts">
+    import { navigate } from "svelte-routing";
     import TextField from "../../components/TextField/TextField.svelte";
     import { axiosInstance } from "../../module/axiosConfig";
     import messageModule from "../../module/swalConfig";
+    import { accessToken, refreshToken } from "../../store";
 
     let username: string;
     let password: string;
@@ -9,20 +11,18 @@
     const loginHandler = async () => {
         const user = { username, password };
 
-        try {
-            const res = await axiosInstance.post<Record<'access_token'|'refresh_token', string>>("/auth/login", user);
-            
-            if (res.status === 200 || res.status === 201) {
-                const { access_token: accessToken, refresh_token: refreshToken } = res.data;
-                localStorage.setItem("access_token", accessToken);
-                localStorage.setItem("refresh_token", refreshToken);
-            }
+        const res = await axiosInstance.post<Record<'access_token'|'refresh_token', string>>("/auth/login", user);
+        
+        if (res.status === 200 || res.status === 201) {
+            const { access_token, refresh_token } = res.data;
+            accessToken.set(access_token);
+            refreshToken.set(refresh_token);
 
-        } catch (error: any) {
-            if (error.response.status !== 401) {
-                messageModule.error(`Login failed<br><span class="text-red-500 font-bold">[ ${error.message} ]<span>`);
-            }
+            messageModule.alert("Login successful!", () => {
+                navigate('/');
+            }, 'success');
         }
+
     }
 
     const handleInputChange = (evt: Event) => {

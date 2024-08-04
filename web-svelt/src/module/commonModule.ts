@@ -1,8 +1,9 @@
+import { jwtDecode } from "jwt-decode";
 import { progress } from "../store"
 
 export const commonModule = {
     currentProgress: 0,
-    intervalFunc: null as null | NodeJS.Timeout,
+    intervalFunc: null as null | number,
     increaseProgress: (time: number = 10) => {
         if (commonModule.intervalFunc !== null) return;
 
@@ -72,5 +73,9 @@ export const commonModule = {
     coonvertToNumber: (evt: Event) => {
         const input = evt.target as HTMLInputElement;
         input.value = input.value.replace(/\D/g, '');
+    },
+    decodeJwtToken: (token: string|null|undefined) => {
+        if (!token) return null;
+        return jwtDecode(token);
     }
 }
