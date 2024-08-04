@@ -27,13 +27,11 @@ export class ProductController {
 	}
 
 	@Get()
-	@UseGuards(JwtAuthGuard)
 	findAll(@Query() query: any) {
 		return this.productService.findAll(query);
 	}
 
 	@Get(':id')
-	@UseGuards(JwtAuthGuard)
 	findOne(@Param('id') id: string) {
 		return this.productService.findOne(+id);
 	}
