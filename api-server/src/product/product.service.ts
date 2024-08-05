@@ -37,7 +37,7 @@ export class ProductService {
 
   findPreImage(id: number) {
     return this.productRepository.createQueryBuilder('product')
-    .select(['product.image_url'])
+    .select(['product.image_url', 'product.name'])
     .where('id = :id', {id})
     .getOneOrFail();
   }

@@ -46,7 +46,7 @@
                     messageModule.error('Failed to save.');
                 }
             } catch(err) {
-                messageModule.error('An error has occurred.');
+                
             }
         });
     }

@@ -40,4 +40,10 @@ export class AuthService {
             access_token: this.jwtService.sign(payload, { expiresIn: '60m' })
         };
 	}
+
+	decodeAccessToken(token: string) {
+		if (!token) return null;
+
+		return this.jwtService.decode(token);
+	}
 }

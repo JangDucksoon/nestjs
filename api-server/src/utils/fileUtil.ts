@@ -19,7 +19,8 @@ export const uploadImage = async (file: Express.Multer.File, fulPath: string, di
 
 export const deleteImage = async (delFilePath: string) => {
     try {
-
+        if (!delFilePath) return true;
+        
         const delFullPath:string = path.resolve(delFilePath);
         await fs.unlink(delFullPath);
   

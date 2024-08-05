@@ -62,12 +62,16 @@
     const deleteHandler = () => {
         messageModule.confirm('Are you sure you want to delete this product?', async (result: boolean) => {
             if (!result) return;
-
-            const res = await axiosInstance.delete(`/product/${id}`);
+            try {
+                const res = await axiosInstance.delete(`/product/${id}`);
             
-            if (res.statusText === 'OK') {
-                messageModule.alert('Product deleted successfully!', () => navigate(`/product`),'success');
+                if (res.statusText === 'OK') {
+                    messageModule.alert('Product deleted successfully!', () => navigate(`/product`),'success');
+                }
+            } catch (err) {
+                messageModule.error('Failed to delete product', () => {});
             }
+            
         });
     }
 
@@ -114,7 +118,7 @@
             } else {
                 messageModule.alert("There are no changes.", null, 'warning');
             }
-        })
+        });
     };
 
     onMount(() => getProduct(id));
@@ -152,8 +156,10 @@
                     <div class="mb-10 flex justify-between">
                         <button type="button" class="btn" on:click={() => navigate(`/product/${id}`)}>Back</button>
                         <div>
-                            <button type="button" class="btn-red" on:click={deleteHandler}>Delete Product</button>
-                            <button type="submit" class="btn-green">Update Product</button>
+                            {#if commonModule.checkAdministrator()}
+                                <button type="button" class="btn-red" on:click={deleteHandler}>Delete Product</button>
+                                <button type="submit" class="btn-green">Update Product</button>
+                            {/if}
                         </div>
                     </div>
                 </form>
