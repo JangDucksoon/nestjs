@@ -1,12 +1,12 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
-    import type Product from "../../types/Product";
     import { axiosInstance } from "../../module/axiosConfig";
     import properties from "../../property/config";
     import { navigate } from "svelte-routing";
     import { progress, accessToken } from "../../store";
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
     import { commonModule } from "../../module/commonModule";
+    import type Product from "../../types/Product";
 
     export let id: number;
     
@@ -31,7 +31,7 @@
         });
     }
 
-    onMount(() => getProduct(id))
+    onMount(() => getProduct(id));
     onDestroy(() => commonModule.destroyProgress());
 </script>
 

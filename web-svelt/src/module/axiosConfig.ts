@@ -6,7 +6,7 @@ import { commonModule } from "./commonModule";
 import { navigate } from "svelte-routing";
 
 export const axiosInstance = axios.create({
-    baseURL: properties.API_SERVER,
+    baseURL: properties.API_SERVER + '/api',
     timeout: 3000,
     headers: { 'Content-Type': 'application/json'}
 });
@@ -57,7 +57,7 @@ axiosInstance.interceptors.response.use(async (response: any) => {
 
 
 export const axiosMultipartInstance = axios.create({
-    baseURL: properties.API_SERVER,
+    baseURL: properties.API_SERVER + '/api',
     timeout: 3000,
     headers: { 'Content-Type': 'multipart/form-data'}
 });
@@ -102,7 +102,7 @@ axiosMultipartInstance.interceptors.response.use(async (response: any) => {
 
 
 const refreshAxiosInstance = axios.create({
-    baseURL: properties.API_SERVER,
+    baseURL: properties.API_SERVER + '/api',
     timeout: 3000,
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('refreshToken')}` }
 });

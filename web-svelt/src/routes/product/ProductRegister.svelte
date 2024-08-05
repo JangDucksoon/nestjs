@@ -78,7 +78,7 @@
 {#if $progress}
     <p class="text-center text-4xl font-bold mb-4">{$progress}%</p>
     <ProgressLinear app={true} color='purple' progress={$progress}/>
-{:else}
+{:else if commonModule.checkAdministrator()}
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-6">Registry Product</h1>
         <div class="flex gap-20">
@@ -110,6 +110,8 @@
             </div>
         </div>
     </div>
+{:else}
+    <p class="text-center font-bold text-red-500">You do not have permission to access.</p>
 {/if}
 
 <style lang="postcss">

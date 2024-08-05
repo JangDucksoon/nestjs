@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
     import {axiosMultipartInstance, axiosInstance} from "../../module/axiosConfig";
-    import type Product from "../../types/Product";
     import { navigate } from "svelte-routing";
     import properties from "../../property/config";
     import messageModule from "../../module/swalConfig";
@@ -11,6 +10,8 @@
     import { progress } from "../../store";
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
     import { commonModule } from "../../module/commonModule";
+    import type Product from "../../types/Product";
+    
     
     export let id: number;
 
@@ -35,13 +36,12 @@
 
     const getProduct = async (id: number) => {
         commonModule.increaseProgress(1);
-        axiosInstance
-            .get<Product>(`product/${id}`)
-            .then((res) => {
-                product = res.data;
-                loadedProduct = { ...res.data };
-            })
-            .catch((err) => (error = err));
+        const res = await axiosInstance.get<Product>(`product/${id}`)
+            debugger;
+        if (res?.status === 200) {
+            product = res.data;
+            loadedProduct = { ...res.data };
+        }
     };
 
     const handleImageChange = (evt: Event) => {
@@ -131,6 +131,8 @@
     <ProgressLinear color="purple" progress={$progress}/>
 {:else if error}
     <p class="text-center text-red-500">{error}</p>
+{:else if !commonModule.checkAdministrator()}
+    <p class="text-center font-bold text-red-500">You do not have permission to access.</p>
 {:else if product}
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-6">Edit Product</h1>
