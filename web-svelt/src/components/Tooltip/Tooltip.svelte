@@ -65,12 +65,11 @@
 
 <div class="relative inline-block">
   <div
+    role="tooltip"
     on:mouseenter={debounce(showTooltip, delayShow)}
     on:mouseleave={debounce(hideTooltip, delayHide)}
-    on:mouseenter
-    on:mouseleave
-    on:mouseover
-    on:mouseout
+    on:focus={() => {}}
+    on:blur={() => {}}
   >
     <slot name="activator" />
   </div>
