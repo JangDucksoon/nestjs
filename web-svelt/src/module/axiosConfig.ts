@@ -84,7 +84,7 @@ axiosMultipartInstance.interceptors.response.use(async (response: any) => {
                 const res = await refreshAxiosInstance.post<Record<'access_token', string>>('/auth/refresh', user);
                 const access_token: string = res.data.access_token;
                 accessToken.set(access_token);
-                return axiosInstance(err.config);
+                return axiosMultipartInstance(err.config);
             } catch (refreshError) {
                 messageModule.error('Refresh token is invalid or expired, please login again', () => {
                     navigate('/login');
