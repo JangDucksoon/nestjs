@@ -13,6 +13,7 @@
     import Icon from 'svelte-awesome';
     import Tooltip from "./components/Tooltip/Tooltip.svelte";
     import { commonModule } from "./module/commonModule";
+    
     const logout = () => {
         messageModule.confirm('Are you sure you want to logout?', (result: boolean) => {
             if (!result) return;
