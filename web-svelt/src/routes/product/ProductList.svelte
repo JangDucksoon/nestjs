@@ -4,7 +4,6 @@
     import properties from '../../property/config'
     import {axiosInstance} from '../../module/axiosConfig';
     import { Link, navigate } from 'svelte-routing';
-    import messageModule from '../../module/swalConfig';
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
     import { progress } from '../../store';
     import { commonModule } from '../../module/commonModule';
@@ -26,8 +25,9 @@
 
         try {
             const res = await axiosInstance.get<[Product[], number]>(`/product?skip=${skip}&limit=${limit}`);
+
             if (res.status === 200) {
-                [products, totalCount] = res.data
+                [products, totalCount] = res.data;
             }
         } catch (error: any) {
             error = error.message;
@@ -42,9 +42,9 @@
 </script>
 
 <div class="container mx-auto px-4 py-8">
-    <!--<h1 class="text-3xl font-bold mb-6">Product List</h1>-->
-    <button type="button" class="btn-green" on:click={() => navigate('/product/register')}>Registry</button>
-
+    {#if commonModule.checkAdministrator()}
+        <button type="button" class="btn-green" on:click={() => navigate('/product/register')}>Registry</button>
+    {/if}
     {#if $progress !== 0}
         <p class="text-center text-4xl font-bold mb-4">{$progress}%</p>
         <ProgressLinear app={true} color="yellow" progress={$progress}/>
@@ -65,7 +65,7 @@
             </Link>
             {/each}
         </div>
-        <Pagination totalCount={totalCount} bind:pageIndex={pageIndex} bind:startIndex={startIndex} recordPerPage={recordPerPage} selectFunc={getProductList}/>
+        <Pagination totalCount={totalCount} bind:pageIndex={pageIndex} bind:startIndex={startIndex} recordPerPage={recordPerPage} selectFunc={getProductList} pageSize={5}/>
     {/if}
 </div>
 

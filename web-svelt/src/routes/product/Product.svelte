@@ -4,8 +4,7 @@
     import { axiosInstance } from "../../module/axiosConfig";
     import properties from "../../property/config";
     import { navigate } from "svelte-routing";
-    import messageModule from "../../module/swalConfig";
-    import { progress } from "../../store";
+    import { progress, accessToken } from "../../store";
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
     import { commonModule } from "../../module/commonModule";
 
@@ -24,6 +23,12 @@
         } catch (error: any) {
             error = error.message;
         }
+    }
+
+    const moveModifyProduct = () => {
+        commonModule.verifyToken(() => {
+            navigate(`/product/${id}/modify`);
+        });
     }
 
     onMount(() => getProduct(id))
@@ -47,7 +52,9 @@
         </div>
         <div class="flex space-x-4 mt-4">
             <button type="button" class="btn" on:click={() => navigate('/product')}>List</button>
-            <button type="button" class="btn-blue" on:click={() => navigate(`/product/${id}/modify`)}>Modify</button>
+            {#if commonModule.checkAdministrator()}
+                <button type="button" class="btn-blue" on:click={moveModifyProduct}>Modify</button>
+            {/if}
         </div>
     {:else}
         <p class="text-center text-red-500">Product doesn't exist</p>

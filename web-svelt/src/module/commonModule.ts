@@ -1,9 +1,10 @@
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, type JwtPayload } from "jwt-decode";
 import { progress } from "../store"
+import { axiosInstance } from "./axiosConfig";
 
 export const commonModule = {
     currentProgress: 0,
-    intervalFunc: null as null | number,
+    intervalFunc: null as null | NodeJS.Timeout,
     increaseProgress: (time: number = 10) => {
         if (commonModule.intervalFunc !== null) return;
 
@@ -77,5 +78,27 @@ export const commonModule = {
     decodeJwtToken: (token: string|null|undefined) => {
         if (!token) return null;
         return jwtDecode(token);
+    },
+    checkAdministrator: () => {
+        const user: any = commonModule.decodeJwtToken(localStorage.getItem('accessToken'));
+        
+        if (user?.auth === 'sys') {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    verifyToken: async (callback: Function) => {
+        try {
+            const res = await axiosInstance.get('/auth/verifyToken');
+
+            if (res.status === 200) {
+                if (callback) {
+                    callback();
+                }
+            }
+        } catch (error) {
+            
+        }
     }
 }
