@@ -4,6 +4,7 @@
     import { axiosInstance } from "../../module/axiosConfig";
     import messageModule from "../../module/swalConfig";
     import { accessToken, refreshToken } from "../../store";
+    import { commonModule } from "../../module/commonModule";
 
     let username: string;
     let password: string;
@@ -11,12 +12,14 @@
     const loginHandler = async () => {
         const user = { username, password };
 
-        const res = await axiosInstance.post<Record<'access_token'|'refresh_token', string>>("/auth/login", user);
+        const res = await axiosInstance.post<Record<'access_token'|'refresh_token'|'test_token', string>>("/auth/login", user);
         
         if (res.status === 200 || res.status === 201) {
-            const { access_token, refresh_token } = res.data;
+            const { access_token, refresh_token, test_token } = res.data;
             accessToken.set(access_token);
             refreshToken.set(refresh_token);
+            localStorage.setItem('testToken', test_token);
+
 
             messageModule.alert("Login successful!", () => {
                 navigate('/');
@@ -24,23 +27,15 @@
         }
 
     }
-
-    const handleInputChange = (evt: Event) => {
-        const input = evt.target as HTMLInputElement
-        const value = input.value;
-        const filterValue = value.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣| ]/g, '');
-
-        input.value = filterValue;
-    }
 </script>
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Login</h1>
     <form on:submit|preventDefault={loginHandler} class="space-y-10">
         <div>
-            <TextField label="Username" bind:value={username} outlined hint="Write here your ID" required on:input={handleInputChange}/>
+            <TextField label="Username" bind:value={username} outlined hint="Write here your ID" required on:input={commonModule.filterHangleAndSpace}/>
         </div>
         <div>
-            <TextField label="Password" type="password" bind:value={password} outlined hint="Write here your password" required on:input={handleInputChange}/>
+            <TextField label="Password" type="password" bind:value={password} outlined hint="Write here your password" required on:input={commonModule.filterHangleAndSpace}/>
         </div>
         <div>
             <button type="submit" class="btn-green w-full">

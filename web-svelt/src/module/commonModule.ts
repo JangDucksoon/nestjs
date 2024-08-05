@@ -71,6 +71,13 @@ export const commonModule = {
     isNumeric: (value: string|number) => {
         return !isNaN(parseFloat(value.toString()));
     },
+    filterHangleAndSpace: (evt: Event) => {
+        const input = evt.target as HTMLInputElement
+        const value = input.value;
+        const filterValue = value.replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣| ]/g, '');
+
+        input.value = filterValue;
+    },
     coonvertToNumber: (evt: Event) => {
         const input = evt.target as HTMLInputElement;
         input.value = input.value.replace(/\D/g, '');

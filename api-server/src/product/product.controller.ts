@@ -27,7 +27,6 @@ export class ProductController {
 	}
 
 	@Get()
-	@UseGuards(JwtAuthGuard)
 	findAll(@Query() query: any) {
 		return this.productService.findAll(query);
 	}
@@ -61,6 +60,7 @@ export class ProductController {
 
 	@Delete(':id')
 	@UseGuards(JwtAuthGuard)
+	@SetMetadata('auth', ['sys'])
 	async remove(@Param('id') id: string) {
 		console.log('remove product');
 		try {

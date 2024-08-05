@@ -24,8 +24,7 @@ axiosInstance.interceptors.request.use(async (config: any) => {
 axiosInstance.interceptors.response.use(async (response: any) => {
     return response;
 }, async (err) => {
-    debugger;
-    if (err.response && err.response.status === 401) {
+    if (err?.response?.status === 401) {
         if (location.href.includes('/login')) {
             accessToken.set(null);
             refreshToken.set(null);
@@ -49,10 +48,8 @@ axiosInstance.interceptors.response.use(async (response: any) => {
                 }, 'info');
             }
         }
-    } else if (err.response && err.response.status === 403) {
-        return Promise.reject('Insufficient permissions');
     } else {
-        return Promise.reject(err);
+        messageModule.error(`<span class="text-red-500 font-bold">${err?.response?.data?.message || err?.message}</span>`);
     }
 });
 
@@ -80,7 +77,7 @@ axiosMultipartInstance.interceptors.request.use(async (config: any) => {
 axiosMultipartInstance.interceptors.response.use(async (response: any) => {
     return response;
 }, async (err) => {
-    if (err.response && err.response.status === 401) {
+    if (err?.response?.status === 401) {
         const user: any = commonModule.decodeJwtToken(localStorage.getItem('refreshToken'));
         if (user) {
             try {
@@ -98,10 +95,8 @@ axiosMultipartInstance.interceptors.response.use(async (response: any) => {
                 navigate('/login');
             }, 'info');
         }
-    }  else if (err.response && err.response.status === 403) {
-        messageModule.error(err.response.data.message);
     } else {
-        return Promise.reject(err);
+        messageModule.error(`<span class="text-red-500 font-bold">${err?.response?.data?.message || err?.message}</span>`);
     }
 });
 

@@ -102,7 +102,9 @@
                     </div>
                     <div class="mb-10 flex justify-between">
                         <button type="button" class="btn" on:click={() => navigate(`/product/`)}>Back</button>
-                        <button type="submit" class="btn-green">Register Product</button>
+                        {#if commonModule.checkAdministrator()}
+                            <button type="submit" class="btn-green">Register Product</button>
+                        {/if}
                     </div>
                 </form>
             </div>
