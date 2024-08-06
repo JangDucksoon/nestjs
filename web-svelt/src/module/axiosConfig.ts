@@ -8,7 +8,7 @@ import { navigate } from "svelte-routing";
 export const axiosInstance = axios.create({
     baseURL: properties.API_SERVER + '/api',
     timeout: 3000,
-    headers: { 'Content-Type': 'application/json'}
+    headers: {'Content-Type': 'application/json'}
 });
 
 axiosInstance.interceptors.request.use(async (config: any) => {
