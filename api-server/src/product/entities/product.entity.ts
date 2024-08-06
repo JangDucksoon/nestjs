@@ -1,4 +1,5 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Basket } from "src/basket/entities/basket.entity";
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('products')
 export class Product {
@@ -18,4 +19,7 @@ export class Product {
 
     @Column({nullable: true})
     image_url: string;
+
+    @OneToMany(() => Basket, basket => basket.product)
+    basket: Basket[];
 }

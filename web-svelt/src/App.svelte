@@ -9,11 +9,13 @@
     import Login from "./routes/auth/Login.svelte";
     import { accessToken, refreshToken } from "./store";
     import messageModule from "./module/swalConfig";
-    import { faUser, faSignOutAlt, faAddressCard } from '@fortawesome/free-solid-svg-icons';
+    import { faUser, faSignOutAlt, faAddressCard, faBasketShopping } from '@fortawesome/free-solid-svg-icons';
     import Icon from 'svelte-awesome';
     import Tooltip from "./components/Tooltip/Tooltip.svelte";
     import { commonModule } from "./module/commonModule";
+    import BasketList from "./routes/basket/BasketList.svelte";
     
+
     const logout = () => {
         messageModule.confirm('Are you sure you want to logout?', (result: boolean) => {
             if (!result) return;
@@ -50,9 +52,20 @@
                 {#if $accessToken}
                     <Tooltip>
                         <div slot="activator">
+                            <button type="button" class="text-white hover:text-gray-300 flex items-center" on:click={() => {navigate('/basket')}}>
+                                <Icon data={faBasketShopping} scale={1.5} class="mr-2"/>
+                                <span class="sr-only">Basket List</span>
+                            </button>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-3">
+                            <div class="text-sm font-bold text-gray-900 mb-2">Basket List</div>
+                        </div>
+                    </Tooltip>
+                    <Tooltip>
+                        <div slot="activator">
                             <button type="button" class="text-white hover:text-gray-300 flex items-center">
                                 <Icon data={faAddressCard} scale={1.5} class="mr-2"/>
-                                <span class="sr-only">Logout</span>
+                                <span class="sr-only">User Info</span>
                             </button>
                         </div>
                         <div class="bg-white rounded-lg shadow-md p-4 w-48">
@@ -109,5 +122,6 @@
             <ProductModify id={+params.id}/>
         </Route>
         <Route path='/product/register' component={ProductRegister}/>
+        <Route path='/basket' component={BasketList}/>
     </main>
 </Router>

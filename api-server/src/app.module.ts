@@ -6,6 +6,8 @@ import { ProductModule } from './product/product.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
+import { BasketModule } from './basket/basket.module';
+import { CustomNamingStrategy } from './utils/name.strategy';
 
 
 //fill with code for using type orm and sqllite3
@@ -21,9 +23,11 @@ import { AuthModule } from './auth/auth.module';
       autoLoadEntities: true,
       synchronize: true,
       logging: true,
+      namingStrategy: new CustomNamingStrategy()
     }),
     ProductModule,
-    AuthModule
+    AuthModule,
+    BasketModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Basket } from "src/basket/entities/basket.entity";
+import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class Auth {
@@ -13,4 +14,7 @@ export class Auth {
 
     @Column({default: 'user'})
     auth: string;
+
+    @OneToMany(() => Basket, basket => basket.auth)
+    basket: Basket[];
 }
