@@ -78,6 +78,14 @@
 
     }
 
+    const showTotalPrice = () => {
+        const price:number | undefined = product?.price;
+        const quantity: number = productQuantity!;
+        const result = (price as number * quantity);
+
+        return isNaN(result) ? '0 \\': result.toLocaleString() + ' \\';
+    }
+
     onMount(() => getProduct(id));
     onDestroy(() => commonModule.destroyProgress());
 </script>
@@ -100,26 +108,21 @@
         <div class="flex space-x-4">
             <TextField type="number" label="Quantity" outlined hint="Quantity of items to order" readonly bind:value={productQuantity} on:input={commonModule.filterHangleAndSpace}/>
             <div class="flex flex-col h-14 mt-2 gap-1">
-                <Tooltip>
-                    <div slot="activator" class="border border-gray-300 rounded-lg shadow-sm hover:shadow-md">
-                        <button type="button" class="text-blue hover:text-gray-300 flex items-center" on:click={() => updateQuantity('plus')}>
-                            <Icon data={faPlus} scale={1.5}/>
-                            <span class="sr-only">+</span>
-                        </button>
-                    </div>
-                    Click to increase the quantity.
-                </Tooltip>
-                <Tooltip>
-                    <div slot="activator" class="border border-gray-300 rounded-lg shadow-sm hover:shadow-md">
-                        <button type="button" class="text-blue hover:text-gray-300 flex items-center" on:click={() => updateQuantity('minus')}>
-                            <Icon data={faMinus} scale={1.5}/>
-                            <span class="sr-only">-</span>
-                        </button>
-                    </div>
-                    Click to decrease the quantity.
-                </Tooltip>
+                <button type="button" class="text-blue hover:text-gray-300 flex items-center border border-gray-300 rounded-lg shadow-sm hover:shadow-md" on:click={() => updateQuantity('plus')}>
+                    <Icon data={faPlus} scale={1.5}/>
+                    <span class="sr-only">+</span>
+                </button>
+                <button type="button" class="text-blue hover:text-gray-300 flex items-center border border-gray-300 rounded-lg shadow-sm hover:shadow-md" on:click={() => updateQuantity('minus')}>
+                    <Icon data={faMinus} scale={1.5}/>
+                    <span class="sr-only">-</span>
+                </button>
             </div>
-            <button type="button" class="btn-blue mt-2 h-14 disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100" on:click={addToCart} disabled={(productQuantity||0) <= 0}>Add to Cart</button>
+            <Tooltip>
+                <div slot="activator">
+                    <button type="button" class="btn-blue mt-2 h-14 disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100" on:click={addToCart} disabled={(productQuantity||0) <= 0}>Add to Cart</button>
+                </div>
+                {showTotalPrice()}
+            </Tooltip>
         </div>
         <div class="flex space-x-4 mt-4">
             <button type="button" class="btn" on:click={() => navigate('/product')}>List</button>

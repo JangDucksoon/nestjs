@@ -7,13 +7,14 @@
     import ProductModify from "./routes/product/ProductModify.svelte";
     import ProductRegister from "./routes/product/ProductRegister.svelte";
     import Login from "./routes/auth/Login.svelte";
-    import { accessToken, refreshToken } from "./store";
+    import { accessToken, refreshToken, serverProgress } from "./store";
     import messageModule from "./module/swalConfig";
     import { faUser, faSignOutAlt, faAddressCard, faBasketShopping } from '@fortawesome/free-solid-svg-icons';
     import Icon from 'svelte-awesome';
     import Tooltip from "./components/Tooltip/Tooltip.svelte";
     import { commonModule } from "./module/commonModule";
     import BasketList from "./routes/basket/BasketList.svelte";
+    import ProgressLinear from "./components/ProgressLinear/ProgressLinear.svelte";
     
 
     const logout = () => {
@@ -23,7 +24,7 @@
             accessToken.set(null);
             refreshToken.set(null);
 
-            if (location.href.includes('/product')) {
+            if (location.href.includes('/modify') || location.href.includes('/register')) {
                 navigate('/');
             }
         });
@@ -54,11 +55,11 @@
                         <div slot="activator">
                             <button type="button" class="text-white hover:text-gray-300 flex items-center" on:click={() => {navigate('/basket')}}>
                                 <Icon data={faBasketShopping} scale={1.5} class="mr-2"/>
-                                <span class="sr-only">Basket List</span>
+                                <span class="sr-only">Cart List</span>
                             </button>
                         </div>
                         <div class="bg-white rounded-lg shadow-md p-3">
-                            <div class="text-sm font-bold text-gray-900 mb-2">Basket List</div>
+                            <div class="text-sm font-bold text-gray-900 mb-2">Cart List</div>
                         </div>
                     </Tooltip>
                     <Tooltip>
@@ -123,5 +124,26 @@
         </Route>
         <Route path='/product/register' component={ProductRegister}/>
         <Route path='/basket' component={BasketList}/>
+        {#if $serverProgress}
+            <div class="overlay flex-col">
+                <h2 class="text-center text-4xl font-bold mb-4">{$serverProgress}%</h2>
+                <ProgressLinear app={true} color="indigo" progress={$serverProgress}/>
+            </div>
+        {/if}
     </main>
 </Router>
+
+<style>
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+</style>
