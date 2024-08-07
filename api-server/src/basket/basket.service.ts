@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBasketDto } from './dto/create-basket.dto';
 import { UpdateBasketDto } from './dto/update-basket.dto';
-import { Repository, type DeleteResult } from 'typeorm';
+import { In, Repository, type DeleteResult } from 'typeorm';
 import { Basket } from './entities/basket.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
@@ -54,5 +54,10 @@ export class BasketService {
   async removeOne(userId: string, productId: number) {
     await this.basketRepository.delete({userId, productId});
     return this.findAll(userId);
+  }
+
+  async removeBaskets(userId: string, productIdArray: number[]) {
+    await this.basketRepository.delete({userId, productId: In(productIdArray)});
+    return this.findAll(userId)
   }
 }

@@ -41,3 +41,43 @@
 .btn-blue:hover {
     @apply bg-gradient-to-r from-blue-500 to-cyan-600 shadow-xl scale-110;
 }
+
+.btn-purple {
+    @apply bg-gradient-to-r from-purple-400 to-violet-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition duration-300 transform mb-4;
+}
+
+.btn-purple:hover {
+    @apply bg-gradient-to-r from-purple-500 to-violet-600 shadow-xl scale-110;
+}
+
+.btn-orange {
+    @apply bg-gradient-to-r from-orange-400 to-red-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition duration-300 transform mb-4;
+}
+
+.btn-orange:hover {
+    @apply bg-gradient-to-r from-orange-500 to-red-600 shadow-xl scale-110;
+}
+
+.btn-teal {
+    @apply bg-gradient-to-r from-teal-400 to-green-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition duration-300 transform mb-4;
+}
+
+.btn-teal:hover {
+    @apply bg-gradient-to-r from-teal-500 to-green-600 shadow-xl scale-110;
+}
+
+.btn-cyan {
+    @apply bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition duration-300 transform mb-4;
+}
+
+.btn-cyan:hover {
+    @apply bg-gradient-to-r from-cyan-500 to-blue-600 shadow-xl scale-110;
+}
+
+.btn-pink {
+    @apply bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition duration-300 transform mb-4;
+}
+
+.btn-pink:hover {
+    @apply bg-gradient-to-r from-pink-500 to-purple-600 shadow-xl scale-110;
+}

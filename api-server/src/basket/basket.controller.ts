@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, BadRequestException } from '@nestjs/common';
 import { BasketService } from './basket.service';
 import { CreateBasketDto } from './dto/create-basket.dto';
 import { UpdateBasketDto } from './dto/update-basket.dto';
@@ -23,6 +23,16 @@ export class BasketController {
   @Patch(':userId/:productId')
   update(@Param('userId') userId: string, @Param('productId') productId: string, @Body() updateBasketDto: UpdateBasketDto) {
     return this.basketService.update(userId, +productId, updateBasketDto);
+  }
+
+  @Delete(':userId/checked')
+  removeBaskets(@Param('userId') userId: string, @Query('productIdArray') productIdArray: string) {
+    if (!productIdArray) {
+      throw new BadRequestException('Checking product is required');
+    }
+
+    const productIds: number[] = productIdArray.split(',').map(id => Number(id));
+    return this.basketService.removeBaskets(userId, productIds);
   }
 
   @Delete(':userId/:productId')
