@@ -14,6 +14,7 @@
     let basketList: Basket[] = [];
     let checkedList: number[] = [];
     let totalPrice: number = 0;
+    let checkedPrice: number = 0;
 
     const getBasketList = async () => {
         commonModule.increaseProgress(0.1);
@@ -123,7 +124,7 @@
 
     $: $accessToken ? void(0) : navigate('/product');
     $: totalPrice = basketList.reduce((acc, curr) => acc + curr.totalPrice, 0);
-
+    $: checkedPrice = basketList.filter(b => checkedList.includes(b.productId)).reduce((acc, curr) => acc + curr.totalPrice, 0);
 
     onMount(getBasketList);
     onDestroy(() => commonModule.destroyProgress());
@@ -173,15 +174,17 @@
                 </div>
             {/each}
         </div>
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-30">
             <div class="container mx-auto">
-                <div class="max-w-[1280px] mx-auto flex justify-between items-center"> <!-- max-w-[1280px]는 Tailwind의 기본 컨테이너 최대 너비 -->
+                <div class="max-w-[1400px] mx-auto flex justify-between items-center"> <!-- max-w-[1280px]는 Tailwind의 기본 컨테이너 최대 너비 -->
                     <div class="text-lg font-semibold text-blue-500">
-                        총 금액 : {totalPrice.toLocaleString()} 원
+                        Total Amount : {totalPrice.toLocaleString()} 원 <br>
+                        Selected Items Total : {checkedPrice.toLocaleString()} 원
                     </div>
-                    <div class="flex gap-5">
-                        <button class="btn-pink disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100" disabled={checkedList.length === 0}>Remove Selected</button>
-                        <button class="btn-red">Remove All</button>
+                    <div class="flex gap-5 items-center mt-3">
+                        <button class="btn-pink disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100" disabled={checkedList.length === 0}
+                        on:click={() => deleteCheckedBaskets(false)}>Remove Selected</button>
+                        <button class="btn-red" on:click={() => {deleteCheckedBaskets(true)}}>Remove All</button>
                         <button class="btn-yellow disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100" disabled={checkedList.length === 0}>Proceed with Selected Items</button>
                         <button class="btn-green">Proceed to Checkout</button>
                     </div>
