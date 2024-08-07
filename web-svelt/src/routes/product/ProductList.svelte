@@ -5,7 +5,7 @@
     import {axiosInstance} from '../../module/axiosConfig';
     import { Link, navigate } from 'svelte-routing';
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
-    import { progress } from '../../store';
+    import { accessToken, progress } from '../../store';
     import { commonModule } from '../../module/commonModule';
     import Pagination from "../../components/Pagination/Pagination.svelte";
 
@@ -15,6 +15,8 @@
     let error: string | null = null;
     let pageIndex: number = 0;
     let startIndex: number = 0;
+    let authSystem: boolean = commonModule.checkAdministrator();
+
     const recordPerPage: number = 16;
 
     async function getProductList(cPageIndex = 0) {
@@ -34,15 +36,19 @@
         }
     }
 
+    $: {
+        $accessToken
+        authSystem = commonModule.checkAdministrator();
+    }
+    
     onMount(() => getProductList());
-
     onDestroy(() => {
         commonModule.destroyProgress();
     })
 </script>
 
 <div class="container mx-auto px-4 py-8">
-    {#if commonModule.checkAdministrator()}
+    {#if authSystem}
         <button type="button" class="btn-green" on:click={() => navigate('/product/register')}>Registry</button>
     {/if}
     {#if $progress !== 0}

@@ -18,6 +18,7 @@
     let product: Product | null = null;
     let error: string | null = null;
     let productQuantity: number|null = null;
+    let authSystem: boolean = commonModule.checkAdministrator();
 
     const getProduct = async (id: number) => {
         commonModule.increaseProgress(1);
@@ -86,6 +87,11 @@
         return isNaN(result) ? '0 \\': result.toLocaleString() + ' \\';
     }
 
+    $: {
+        $accessToken
+        authSystem = commonModule.checkAdministrator();
+    }
+
     onMount(() => getProduct(id));
     onDestroy(() => commonModule.destroyProgress());
 </script>
@@ -126,7 +132,7 @@
         </div>
         <div class="flex space-x-4 mt-4">
             <button type="button" class="btn" on:click={() => navigate('/product')}>List</button>
-            {#if commonModule.checkAdministrator()}
+            {#if authSystem}
                 <button type="button" class="btn-blue" on:click={moveModifyProduct}>Modify</button>
             {/if}
         </div>
