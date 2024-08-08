@@ -13,10 +13,10 @@ export class Basket {
     @PrimaryColumn('integer')
     productId: number;
 
-    @Column('integer', {default: 1})
+    @Column('integer', {default: 1, nullable: false})
     productQuantity: number;
 
-    @Column('integer')
+    @Column('integer', {nullable: false})
     totalPrice: number;
 
     @ManyToOne(() => Auth, auth => auth.basket)

@@ -1,4 +1,5 @@
 import { Basket } from "src/basket/entities/basket.entity";
+import { Payment } from "src/payment/entities/payment.entity";
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('products')
@@ -8,18 +9,22 @@ export class Product {
     @Index()
     id: number;
 
-    @Column()
+    @Column({type: 'varchar', nullable: false})
     name: string;
 
-    @Column()
+    @Column({type : 'varchar', nullable : false})
     description: string;
 
-    @Column({type: 'bigint'})
+    @Column({type: 'bigint', nullable : false})
+    @Index()
     price: number;
 
-    @Column({nullable: true})
+    @Column({type: 'varchar', nullable: true})
     image_url: string;
 
     @OneToMany(() => Basket, basket => basket.product)
     basket: Basket[];
+
+    @OneToMany(() => Payment, payment => payment.product)
+    payment: Payment[];
 }

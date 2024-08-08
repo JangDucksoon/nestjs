@@ -1,20 +1,26 @@
 import { Basket } from "src/basket/entities/basket.entity";
-import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Payment } from "src/payment/entities/payment.entity";
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class Auth {
     @PrimaryGeneratedColumn()
+    @Index()
     id: number;
 
-    @Column({unique: true})
+    @Column({type: 'varchar', unique: true, nullable: false})
+    @Index()
     username: string;
 
-    @Column()
+    @Column({type: 'varchar', nullable: false})
     hashed_password: string;
 
-    @Column({default: 'user'})
+    @Column({type: 'varchar', nullable: false, default: 'user'})
     auth: string;
 
     @OneToMany(() => Basket, basket => basket.auth)
     basket: Basket[];
+
+    @OneToMany(() => Payment, payment => payment.auth)
+    payment: Payment[];
 }

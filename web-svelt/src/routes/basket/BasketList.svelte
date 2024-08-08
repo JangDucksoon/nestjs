@@ -68,7 +68,7 @@
         }
     }
 
-    const changeCartProperties = (basket: Basket, type: string) => {
+    const changeQuantity = (basket: Basket, type: string) => {
         if (type === 'plus') {
             basket.productQuantity += 1;
         } else {
@@ -81,6 +81,28 @@
             basket.totalPrice = basket.productQuantity * (basket.product?.price||0);
             updateBasket(basket);
         }
+    }
+
+    const orderProduct = (all: boolean = false) => {
+        if (!all && checkedList.length === 0) {
+            messageModule.alert('No items selected for checkout', null, 'info');
+            return;
+        }
+
+        const target = all ? 'all' : 'checked';
+        messageModule.confirm(`Are you sure you want to checkout ${target} items?`, async (result: boolean) => {
+            if (!result) return;
+
+            const targetList = all ? [...basketList] : basketList.filter(b => checkedList.includes(b.productId));
+            const res = await axiosInstance.post<Basket[]>('payment', targetList);
+
+            if (res?.status === 200 || res?.status === 201) {
+                messageModule.alert('Order successful', () => {
+                    refreshBasketList(res.data);
+                    checkedList = [];
+                });
+            }
+        })
     }
 
     const refreshBasketList = (result:Basket[]|Basket) => {
@@ -104,9 +126,11 @@
         if (card) {
             if (card.classList.contains('hidden')) {    //hidden 이 remove되면 체크
                 card.classList.remove('hidden');
+                card.classList.add('flex');
                 checkedList = [...checkedList, productId];   
             } else {    //체크해제
                 card.classList.add('hidden');
+                card.classList.remove('flex');
                 checkedList = checkedList.filter(id => id!== productId);
             }
         }
@@ -131,7 +155,6 @@
 </script>
 
 <div class="container mx-auto px-4 py-8">
-    <!--<button type="button" class="btn-green" on:click={() => deleteCheckedBaskets()}>Delete Selected</button>-->
     {#if $progress}
         <p class="text-center text-4xl font-bold mb-4">{$progress}%</p>
         <ProgressLinear app={true} color="pink" progress={$progress}/>
@@ -141,7 +164,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-20">
             {#each basketList as basket (basket.productId)}
                 <div id="{`product-${basket.productId}`}" class="product-item bg-white rounded-lg shadow-md overflow-hidden" title={basket.product?.name} class:active={false}>
-                    <div id={`product-check-${basket.productId}`} class="cardOverlay absolute inset-0 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out z-20 flex items-center justify-center hidden">
+                    <div id={`product-check-${basket.productId}`} class="cardOverlay absolute inset-0 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out z-20 items-center justify-center hidden">
                         <button type="button" class="transition duration-300 transform flex items-center shadow-sm hover:shadow-xl hover:scale-110" on:click={() => checkCard(basket.productId)}>
                             <Icon data={faCircleCheck} scale={5} style="color: #9c33c1;"/>
                         </button>
@@ -155,12 +178,12 @@
                         <p class="text-lg font-bold text-blue-600">{basket.totalPrice.toLocaleString()} 원</p>
                     </div>
                     <div class="flex items-center justify-center gap-1 mb-3 space-x-4">
-                        <button type="button" class="text-blue hover:text-gray-300 flex items-center border border-gray-300 shadow-sm hover:shadow-md" on:click={() => changeCartProperties(basket, 'minus')}>
+                        <button type="button" class="text-blue hover:text-gray-300 flex items-center border border-gray-300 shadow-sm hover:shadow-md" on:click={() => changeQuantity(basket, 'minus')}>
                             <Icon data={faMinus} scale={1.5}/>
                             <span class="sr-only">-</span>
                         </button>
                         <input type="text" readonly class="w-16 text-center" bind:value={basket.productQuantity} />
-                        <button type="button" class="text-blue hover:text-gray-300 flex items-center border border-gray-300 shadow-sm hover:shadow-md" on:click={() => changeCartProperties(basket, 'plus')}>
+                        <button type="button" class="text-blue hover:text-gray-300 flex items-center border border-gray-300 shadow-sm hover:shadow-md" on:click={() => changeQuantity(basket, 'plus')}>
                             <Icon data={faPlus} scale={1.5}/>
                             <span class="sr-only">+</span>
                         </button>
@@ -185,8 +208,8 @@
                         <button class="btn-pink disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100" disabled={checkedList.length === 0}
                         on:click={() => deleteCheckedBaskets(false)}>Remove Selected</button>
                         <button class="btn-red" on:click={() => {deleteCheckedBaskets(true)}}>Remove All</button>
-                        <button class="btn-yellow disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100" disabled={checkedList.length === 0}>Proceed with Selected Items</button>
-                        <button class="btn-green">Proceed to Checkout</button>
+                        <button class="btn-yellow disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100" disabled={checkedList.length === 0} on:click={() => orderProduct(false)}>Proceed with Selected Items</button>
+                        <button class="btn-green" on:click={() => orderProduct(true)}>Proceed to Checkout</button>
                     </div>
                 </div>
             </div>
