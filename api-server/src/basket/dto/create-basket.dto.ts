@@ -1,5 +1,5 @@
 import { Transform, Type } from "class-transformer";
-import { IsInt, IsNotEmpty, IsObject, isObject, IsString, ValidateNested } from "class-validator";
+import { IsInt, IsNotEmpty, IsObject, isObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { CreateProductDto } from "src/product/dto/create-product.dto";
 
 export class CreateBasketDto {
@@ -23,6 +23,7 @@ export class CreateBasketDto {
     @Transform(({ value }) => parseInt(value))
     totalPrice: number;
 
+    @IsOptional()
     @IsObject()
     @ValidateNested()
     @Type(() => CreateProductDto)

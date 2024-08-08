@@ -21,7 +21,7 @@ export class Payment {
     amount: number;
 
     @Column({ type : 'datetime', nullable : false, default: () => 'CURRENT_TIMESTAMP' })
-    payData: Date;
+    payDate: Date;
 
     @ManyToOne(() => Auth, auth => auth.payment)
     @JoinColumn({name: 'userId', referencedColumnName: 'username'})

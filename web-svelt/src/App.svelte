@@ -9,12 +9,13 @@
     import Login from "./routes/auth/Login.svelte";
     import { accessToken, refreshToken, serverProgress } from "./store";
     import messageModule from "./module/swalConfig";
-    import { faUser, faSignOutAlt, faAddressCard, faBasketShopping } from '@fortawesome/free-solid-svg-icons';
+    import { faUser, faSignOutAlt, faAddressCard, faCartShopping, faRectangleList } from '@fortawesome/free-solid-svg-icons';
     import Icon from 'svelte-awesome';
     import Tooltip from "./components/Tooltip/Tooltip.svelte";
     import { commonModule } from "./module/commonModule";
     import BasketList from "./routes/basket/BasketList.svelte";
     import ProgressLinear from "./components/ProgressLinear/ProgressLinear.svelte";
+    import PaymentList from "./routes/payment/paymentList.svelte";
     
 
     const logout = () => {
@@ -53,8 +54,19 @@
                 {#if $accessToken}
                     <Tooltip>
                         <div slot="activator">
+                            <button type="button" class="text-white hover:text-gray-300 flex items-center" on:click={() => {navigate('/payment')}}>
+                                <Icon data={faRectangleList} scale={1.5} class="mr-2"/>
+                                <span class="sr-only">Paid List</span>
+                            </button>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-3">
+                            <div class="text-sm font-bold text-gray-900 mb-2">Paid List</div>
+                        </div>
+                    </Tooltip>
+                    <Tooltip>
+                        <div slot="activator">
                             <button type="button" class="text-white hover:text-gray-300 flex items-center" on:click={() => {navigate('/basket')}}>
-                                <Icon data={faBasketShopping} scale={1.5} class="mr-2"/>
+                                <Icon data={faCartShopping} scale={1.5} class="mr-2"/>
                                 <span class="sr-only">Cart List</span>
                             </button>
                         </div>
@@ -124,14 +136,17 @@
         </Route>
         <Route path='/product/register' component={ProductRegister}/>
         <Route path='/basket' component={BasketList}/>
-        {#if $serverProgress}
-            <div class="overlay flex-col">
-                <h2 class="text-center text-4xl font-bold mb-4">{$serverProgress}%</h2>
-                <ProgressLinear app={true} color="indigo" progress={$serverProgress}/>
-            </div>
-        {/if}
+        <Route path='/payment' component={PaymentList}/>
     </main>
 </Router>
+
+<!--server loading without page load-->
+{#if $serverProgress}
+    <div class="overlay flex-col">
+        <h2 class="text-center text-4xl font-bold mb-4">{$serverProgress}%</h2>
+        <ProgressLinear app={true} color="indigo" progress={$serverProgress}/>
+    </div>
+{/if}
 
 <style>
     .overlay {

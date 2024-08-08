@@ -17,12 +17,14 @@ export class PaymentService {
 		private readonly paymentRepository: Repository<Payment>,
 
 		private readonly dataSource: DataSource,
-	) {}
+	) { }
 
 	async create(createBasketDtoList: CreateBasketDto[]) {
 		if (!Array.isArray(createBasketDtoList) || createBasketDtoList.length === 0) {
 			throw new BadRequestException('No items found in the basket. Please add items to your cart before proceeding to payment.');
 		}
+
+		const paymentList: Payment[] = [];
 
 		// 다건의 row 핸들링 시, transaction 적용
 		await this.dataSource.transaction(async (manager) => {
@@ -30,27 +32,37 @@ export class PaymentService {
 				const productId: number = dto.productId;
 				const userId: string = dto.userId;
 				const amount: number = dto.product.price;
-	
+
 				for (let i = 0; i < dto.productQuantity; i++) {
 					const payment = plainToClass(CreatePaymentDto, { productId, userId, amount });
 					const paymentEntity = this.paymentRepository.create(payment);
-					await manager.insert(Payment, paymentEntity);
+					paymentList.push(paymentEntity);
 				}
 
 				await manager.delete(Basket, { userId, productId });
-				console.log('Successfully deleted from basket', {userId, productId});
+				console.log('Successfully deleted from basket', { userId, productId });
 			}
+
+			//벌크 인서트
+			await manager.insert(Payment, paymentList);
 		});
 
 		return this.basketRepository.find({
-			where: {userId: createBasketDtoList[0].userId},
+			where: { userId: createBasketDtoList[0].userId },
 			relations: ['product'],
-			order: {'totalPrice': 'desc', 'productId': 'desc'}
+			order: { 'totalPrice': 'desc', 'productId': 'desc' }
 		});
 	}
 
-	findAll() {
-		return `This action returns all payment`;
+	findAllByUserId(userId: string) {
+		return this.paymentRepository.createQueryBuilder('a')
+			.innerJoin('a.product', 'b')
+			.select(['a.userId as userId', 'a.productId as productId', 'b.name as name', 'a.payDate as payDate'])
+			.addSelect('COUNT(1)', 'pCnt')
+			.addSelect('SUM(a.amount)', 'totalPrice')
+			.where('a.userId = :userId', { userId })
+			.groupBy('a.userId, a.productId, b.name, a.payDate')
+			.orderBy('a.payId', 'DESC').getRawMany();
 	}
 
 	findOne(id: number) {
