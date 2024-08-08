@@ -54,14 +54,18 @@ export class PaymentService {
 		});
 	}
 
-	findAllByUserId(userId: string) {
+	findAllByUserId(userId: string, query: any) {
+		const limit = +query?.limit || 20;
+		const skip = +query?.skip || 0;
+		
+
 		return this.paymentRepository.createQueryBuilder('a')
 			.innerJoin('a.product', 'b')
-			.select(['a.userId as userId', 'a.productId as productId', 'b.name as name', 'a.payDate as payDate'])
+			.select(['a.userId as userId', 'a.productId as productId', 'b.name as name', 'a.payDate as payDate', 'b.image_url as imageUrl'])
 			.addSelect('COUNT(1)', 'pCnt')
 			.addSelect('SUM(a.amount)', 'totalPrice')
 			.where('a.userId = :userId', { userId })
-			.groupBy('a.userId, a.productId, b.name, a.payDate')
+			.groupBy('a.userId, a.productId, b.name, a.payDate, b.image_url')
 			.orderBy('a.payId', 'DESC').getRawMany();
 	}
 

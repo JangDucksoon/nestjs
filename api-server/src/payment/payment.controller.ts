@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import type { CreateBasketDto } from 'src/basket/dto/create-basket.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -13,7 +13,7 @@ export class PaymentController {
 	}
 
 	@Get(':userId')
-	findAllByUserId(@Param('userId') userId: string) {
-        return this.paymentService.findAllByUserId(userId);
+	findAllByUserId(@Param('userId') userId: string, @Query() query: any) {
+        return this.paymentService.findAllByUserId(userId, query);
     }
 }
