@@ -9,15 +9,17 @@
     import properties from "../../property/config";
     import Pagination from "../../components/Pagination/Pagination.svelte";
     import { navigate } from "svelte-routing";
-    import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
+    import { faSortDown, faSortUp, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
     import Icon from 'svelte-awesome';
     
 
     let PaymentList: UserPayment[] = [];
-    let recordPerPage = 20;
-    let pageIndex = 0;
-    let startIndex = 0;
-    let totalCount = 0;
+    let recordPerPage: number = 20;
+    let pageIndex: number = 0;
+    let startIndex: number = 0;
+    let totalCount: number = 0;
+    let searchText: string = '';
+    let isFocused: boolean = false;
     let orderCondition: any = {
         payDate: 'DESC',
         totalPrice: '',
@@ -30,7 +32,7 @@
 
         const skip = cPageIndex * recordPerPage;
         const userId = (commonModule.decodeJwtToken($accessToken) as any).username;
-        const res = await axiosInstance.get<{list: UserPayment[], count: number}>(`/payment/${userId}?limit=${recordPerPage}&skip=${skip}`, {params: orderCondition});
+        const res = await axiosInstance.get<{list: UserPayment[], count: number}>(`/payment/${userId}?limit=${recordPerPage}&skip=${skip}&search=${searchText}`, {params: orderCondition});
 
         if (res?.status === 200) {
             PaymentList = res.data.list;
@@ -44,6 +46,14 @@
         orderCondition[type] = condition;
         orderCondition = {...orderCondition, priority: type};
         getPaymentList();
+    }
+
+    const pressEnter = (evt: KeyboardEvent) => {
+        if (evt.key === 'Enter') {
+            pageIndex = 0;
+            startIndex = 0;
+            getPaymentList();
+        }
     }
 
     $: if (!$accessToken) {
@@ -60,6 +70,23 @@
         <ProgressLinear app={true} color="green" progress={$progress} />
     {:else}
         <h1 class="text-2xl font-bold mb-4">Payment List</h1>
+        <div class="mb-6">
+            <div class="relative max-w-md mx-auto">
+            <div class="relative">
+                <input
+                type="text"
+                placeholder="Search by product name"
+                bind:value={searchText}
+                on:focus={() => isFocused = true}
+                on:blur={() => isFocused = false}
+                on:keydown={pressEnter}
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" />
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Icon data={faMagnifyingGlass} scale={1.0} class="mr-2 transition-all duration-300" color={`${isFocused ? '#3b82f6':'#d1d5db'}`}/>
+                </div>
+            </div>
+            </div>
+        </div>
         <div class="container mx-auto p-4 cursor-default">
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white">

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -20,7 +20,14 @@ export class ProductService {
     const skip: number = query?.skip ? +query.skip : 0;
     const take: number = query?.limit ? +query.limit : 10;
     const order: Record<string, 'ASC' | 'DESC'> = {'id': 'DESC'}
-    return this.productRepository.findAndCount({skip, take, order});
+    const search: string = query?.search || '';
+
+    return this.productRepository.findAndCount({
+      where: search? [{ name: ILike(`%${search}%`) }, {description: ILike(`%${search}%`)}] : undefined,
+      skip, 
+      take,
+      order
+    });
   }
 
   findOne(id: number) {

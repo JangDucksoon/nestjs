@@ -7,6 +7,8 @@
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
     import { accessToken, progress } from '../../store';
     import { commonModule } from '../../module/commonModule';
+    import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+    import Icon from 'svelte-awesome';
     import Pagination from "../../components/Pagination/Pagination.svelte";
 
 
@@ -16,6 +18,8 @@
     let pageIndex: number = 0;
     let startIndex: number = 0;
     let authSystem: boolean = commonModule.checkAdministrator();
+    let isFocused: boolean = false;
+    let searchText = '';
 
     const recordPerPage: number = 16;
 
@@ -26,13 +30,21 @@
         const limit = recordPerPage;
 
         try {
-            const res = await axiosInstance.get<[Product[], number]>(`/product?skip=${skip}&limit=${limit}`);
+            const res = await axiosInstance.get<[Product[], number]>(`/product?skip=${skip}&limit=${limit}&search=${searchText}`);
 
             if (res.status === 200) {
                 [products, totalCount] = res.data;
             }
         } catch (error: any) {
             error = error.message;
+        }
+    }
+
+    const pressEnter = (event: KeyboardEvent) => {
+        if (event.key === 'Enter') {
+            startIndex = 0;
+            pageIndex = 0;
+            getProductList();
         }
     }
 
@@ -57,6 +69,23 @@
     {:else if error}
         <p class="text-center text-red-500">{error}</p>
     {:else}
+        <div class="mb-6">
+            <div class="relative max-w-md mx-auto">
+            <div class="relative">
+                <input
+                type="text"
+                placeholder="Search by product name or description"
+                bind:value={searchText}
+                on:focus={() => isFocused = true}
+                on:blur={() => isFocused = false}
+                on:keydown={pressEnter}
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" />
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Icon data={faMagnifyingGlass} scale={1.0} class="mr-2 transition-all duration-300" color={`${isFocused ? '#3b82f6':'#d1d5db'}`}/>
+                </div>
+            </div>
+            </div>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {#each products as product (product.id)}
             <Link to={`/product/${product.id}`} class="block">

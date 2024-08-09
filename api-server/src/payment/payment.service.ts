@@ -57,6 +57,7 @@ export class PaymentService {
 	async findAllByUserId(userId: string, query: any) {
 		const limit = +query?.limit || 20;
 		const skip = +query?.skip || 0;
+		const search = query?.search ?  `%${query.search}%`: '%';
 		const priority = query?.priority || 'payData';
 		let priorityOrderby = {};
 		priorityOrderby[priority] = query[priority];
@@ -68,6 +69,7 @@ export class PaymentService {
 			.addSelect('COUNT(1)', 'pCnt')
 			.addSelect('SUM(a.amount)', 'totalPrice')
 			.where('a.userId = :userId', { userId })
+			.andWhere('lower(b.name) LIKE lower(:search)', { search })
 			.groupBy('a.userId, a.productId, b.name, a.payDate, b.image_url')
 			.orderBy('a.payId', 'DESC');
 
