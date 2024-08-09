@@ -109,7 +109,7 @@
                 <p class="text-xl mb-4">{product?.description}</p>
                 <p class="text-2xl font-bold text-blue-600">{product?.price?.toLocaleString()} 원</p>
             </div>
-            <img src={`${properties.API_SERVER}/${product?.image_url}`} alt={product?.name} class="image"/>
+            <img src={`${properties.API_SERVER}/${product?.image_url}`} alt="" class="image"/>
         </div>
         <div class="flex space-x-4">
             <TextField type="number" label="Quantity" outlined hint="Quantity of items to order" readonly bind:value={productQuantity} on:input={commonModule.filterHangleAndSpace}/>

@@ -146,7 +146,7 @@
         <h1 class="text-3xl font-bold mb-6">Edit Product</h1>
         <div class="flex gap-20">
             <div class="flex-1 flex items-start">
-                <img id="thumnail" src={thumbnail ? thumbnail:`${properties.API_SERVER}/${product?.image_url}`} alt={product?.name} class="image"/>
+                <img id="thumnail" src={thumbnail ? thumbnail:`${properties.API_SERVER}/${product?.image_url}`} alt="" class="image"/>
             </div>
             <div class="flex-1">
                 <form class="w-full mx-auto" on:submit|preventDefault={submitHandler}>

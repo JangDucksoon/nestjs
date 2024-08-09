@@ -105,7 +105,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="text-center border-b">{(recordPerPage * pageIndex) + index + 1}</td>
                                 <td class="py-2 px-4 border-b">
-                                    <img src={`${properties.API_SERVER}/${item.imageUrl}`} alt={item.name} class="w-16 h-16 object-cover"/>
+                                    <img src={`${properties.API_SERVER}/${item.imageUrl}`} alt="" class="w-16 h-16 object-cover"/>
                                 </td>
                                 <td class="py-2 px-4 border-b"><a href={`/product/${item.productId}`} class="font-bold hover:underline">{item.name}</a>
                                 <td class="py-2 px-4 border-b text-right"><span class="font-bold text-blue-500">{item.totalPrice.toLocaleString()}</span> 원</td>

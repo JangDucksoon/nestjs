@@ -61,7 +61,7 @@
             {#each products as product (product.id)}
             <Link to={`/product/${product.id}`} class="block">
             <div id="{`product-${product.id}`}" class="product-item bg-white rounded-lg shadow-md overflow-hidden" title={product.name}>
-                <img src={properties.API_SERVER + '/' + product.image_url} alt={product.name} class="w-full h-48 object-contain" />
+                <img src={properties.API_SERVER + '/' + product.image_url} alt="" class="w-full h-48 object-contain" />
                 <div class="p-4">
                     <h2 class="text-xl font-semibold mb-2">{product.name}</h2>
                     <p class="text-gray-600 mb-2">{product.description}</p>
