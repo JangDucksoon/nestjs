@@ -164,6 +164,6 @@
             </div>
         </div>
 
-        <PaymentModal bind:show={show} payDate={popPayDate} productId={popProductId} userId={popUserId}></PaymentModal>
+        <PaymentModal bind:show={show} payDate={popPayDate} productId={popProductId} userId={popUserId} on:close={() => {pageIndex = 0, startIndex= 0, getPaymentList()}}></PaymentModal>
     {/if}
 </div>

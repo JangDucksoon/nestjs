@@ -22,4 +22,9 @@ export class PaymentController {
 	findPaidProduct(@Param('userId') userId: string, @Param('productId') productId: string, @Query('payDate') payDate: string) {
 		return this.paymentService.findPaidProduct(userId, +productId, payDate);
 	}
+
+	@Delete()
+	removePayments(@Body() payIdArray: number[]) {
+		return this.paymentService.removePayments(payIdArray);
+	}
 }

@@ -4,9 +4,8 @@ import type { CreateBasketDto } from 'src/basket/dto/create-basket.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
-import { Repository, DataSource} from 'typeorm';
+import { Repository, DataSource, In} from 'typeorm';
 import { Basket } from 'src/basket/entities/basket.entity';
-import * as moment from 'moment';
 
 @Injectable()
 export class PaymentService {
@@ -28,7 +27,7 @@ export class PaymentService {
 		const paymentList: Payment[] = [];
 
 		// 다건의 row 핸들링 시, transaction 적용
-		await this.dataSource.transaction(async (manager) => {
+		await this.paymentRepository.manager.transaction(async (manager) => {
 			for (const dto of createBasketDtoList) {
 				const productId: number = dto.productId;
 				const userId: string = dto.userId;
@@ -96,14 +95,21 @@ export class PaymentService {
 	}
 
 	async findPaidProduct(userId: string, productId: number, payDate: string) {
-		const payDateObj = moment.parseZone(moment.parseZone(payDate).format('YYYY-MM-DD HH:mm:ss')).toDate();
-		const paidList = await this.paymentRepository.find({ 
-			where: {userId, productId, payDate: payDateObj},
-			relations: ['product']
-		 });
+		return await this.paymentRepository.createQueryBuilder('a')
+		.innerJoin('a.product', 'b')
+		.select('a.payId')
+		.addSelect('b')
+		.where('a.userId = :userId', { userId })
+		.andWhere('a.productId = :productId', { productId })
+		.andWhere('a.payDate = :payDate', { payDate })
+		.getMany();
+	}
 
-		 console.log('findPaidProduct', paidList);
+	async removePayments(payIdArray: number[]) {
+		if (!Array.isArray(payIdArray) || payIdArray.length === 0) {
+			throw new BadRequestException('No payments found to delete.');
+		}
 
-		return null;
+		return this.paymentRepository.delete({payId: In(payIdArray)});
 	}
 }
