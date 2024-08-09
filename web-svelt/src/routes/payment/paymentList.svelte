@@ -9,19 +9,28 @@
     import properties from "../../property/config";
     import Pagination from "../../components/Pagination/Pagination.svelte";
     import { navigate } from "svelte-routing";
+    import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
+    import Icon from 'svelte-awesome';
+    
 
     let PaymentList: UserPayment[] = [];
     let recordPerPage = 20;
     let pageIndex = 0;
     let startIndex = 0;
     let totalCount = 0;
+    let orderCondition: any = {
+        payDate: 'DESC',
+        totalPrice: '',
+        name: '',
+        priority: 'payDate'
+    };
 
     const getPaymentList = async (cPageIndex = 0) => {
         commonModule.increaseProgress();
 
         const skip = cPageIndex * recordPerPage;
         const userId = (commonModule.decodeJwtToken($accessToken) as any).username;
-        const res = await axiosInstance.get<{list: UserPayment[], count: number}>(`/payment/${userId}?limit=${recordPerPage}&skip=${skip}`);
+        const res = await axiosInstance.get<{list: UserPayment[], count: number}>(`/payment/${userId}?limit=${recordPerPage}&skip=${skip}`, {params: orderCondition});
 
         if (res?.status === 200) {
             PaymentList = res.data.list;
@@ -29,8 +38,16 @@
         }
     };
 
+    const oderbyHandler = (type: 'payDate'| 'totalPrice'| 'name') => {
+        const condition = orderCondition[type] === 'DESC' ? 'ASC' : 'DESC';
+        orderCondition = {};
+        orderCondition[type] = condition;
+        orderCondition = {...orderCondition, priority: type};
+        getPaymentList();
+    }
+
     $: if (!$accessToken) {
-        navigate('/product')
+        navigate('/product');
     }
 
     onMount(getPaymentList);
@@ -49,17 +66,44 @@
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="py-2 px-4 border-b text-center">No</th>
-                            <th class="py-2 px-4 border-b text-center">썸네일</th>
-                            <th class="py-2 px-4 border-b text-center">품명</th>
-                            <th class="py-2 px-4 border-b text-right">가격</th>
-                            <th class="py-2 px-4 border-b text-right">수량</th>
-                            <th class="py-2 px-4 border-b text-center">결제일자</th>
+                            <th class="py-2 px-4 border-b text-center"></th>
+                            <th class="py-2 px-4 border-b text-center cursor-pointer">
+                                <div role="button" on:click={() => oderbyHandler('name')} on:keydown={() => {}} tabindex="0">
+                                    <span>Name</span>
+                                    {#if orderCondition.name === 'DESC'}
+                                        <Icon data={faSortDown} scale={1.5} class="ml-2 mb-2"/>
+                                    {:else if orderCondition.name === 'ASC'}
+                                        <Icon data={faSortUp} scale={1.5} class="ml-2 mt-2"/>
+                                    {/if}
+                                </div>
+                            </th>
+                            <th class="py-2 px-4 border-b text-right cursor-pointer">
+                                <div role="button" on:click={() => oderbyHandler('totalPrice')} on:keydown={() => {}} tabindex="0">
+                                    <span>Price</span>
+                                    {#if orderCondition.totalPrice === 'DESC'}
+                                        <Icon data={faSortDown} scale={1.5} class="ml-2 mb-2"/>
+                                    {:else if orderCondition.totalPrice === 'ASC'}
+                                        <Icon data={faSortUp} scale={1.5} class="ml-2 mt-2"/>
+                                    {/if}
+                                </div>
+                            </th>
+                            <th class="py-2 px-4 border-b text-right">Quantity</th>
+                            <th class="py-2 px-4 border-b text-center cursor-pointer">
+                                <div role="button" on:click={() => oderbyHandler('payDate')} on:keydown={() => {}} tabindex="0">
+                                    <span>Paid Date</span>
+                                    {#if orderCondition.payDate === 'DESC'}
+                                        <Icon data={faSortDown} scale={1.5} class="ml-2 mb-2"/>
+                                    {:else if orderCondition.payDate === 'ASC'}
+                                        <Icon data={faSortUp} scale={1.5} class="ml-2 mt-2"/>
+                                    {/if}
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         {#each PaymentList as item, index (index)}
                             <tr class="hover:bg-gray-50">
-                                <td class="text-center border-b">{index + 1}</td>
+                                <td class="text-center border-b">{(recordPerPage * pageIndex) + index + 1}</td>
                                 <td class="py-2 px-4 border-b">
                                     <img src={`${properties.API_SERVER}/${item.imageUrl}`} alt={item.name} class="w-16 h-16 object-cover"/>
                                 </td>

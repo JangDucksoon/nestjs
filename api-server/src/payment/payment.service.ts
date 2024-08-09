@@ -4,7 +4,7 @@ import type { CreateBasketDto } from 'src/basket/dto/create-basket.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
-import { Repository, DataSource, Transaction } from 'typeorm';
+import { Repository, DataSource} from 'typeorm';
 import { Basket } from 'src/basket/entities/basket.entity';
 
 @Injectable()
@@ -57,9 +57,10 @@ export class PaymentService {
 	async findAllByUserId(userId: string, query: any) {
 		const limit = +query?.limit || 20;
 		const skip = +query?.skip || 0;
-
-		console.log('limit: ' + limit);
-		console.log('skip: ' + skip);
+		const priority = query?.priority || 'payData';
+		let priorityOrderby = {};
+		priorityOrderby[priority] = query[priority];
+		const orderCondition = {...priorityOrderby, payDate: query.payDate || 'DESC', totalPrice: query.totalPrice || 'DESC', name: query.name || 'DESC' };
 
 		const paymentList = this.paymentRepository.createQueryBuilder('a')
 			.innerJoin('a.product', 'b')
@@ -76,15 +77,17 @@ export class PaymentService {
 			.skip(skip)
 			.take(limit)
 			.setParameters(paymentList.getParameters());
-			
+
+		Object.entries(orderCondition).forEach(([col, order]) => {
+			paymentListWithPaging.addOrderBy(`aa.${col}`, (order as 'DESC'|'ASC'));
+		});
 
 		const paymemtCount = this.paymentRepository.manager.createQueryBuilder()
 		    .select('count(1)', 'cnt')
 			.from(`(${paymentList.getQuery()})`, 'aa')
 			.setParameters(paymentList.getParameters());
 
-
-		const [list, count] = [await paymentListWithPaging.getRawMany(), await paymemtCount.getRawOne()];
+		const [list, count] = await Promise.all([paymentListWithPaging.getRawMany(), paymemtCount.getRawOne()]);
 
 		return { list, count: count.cnt };
 	}

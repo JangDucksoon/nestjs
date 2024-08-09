@@ -165,7 +165,7 @@
             {#each basketList as basket (basket.productId)}
                 <div id="{`product-${basket.productId}`}" class="product-item bg-white rounded-lg shadow-md overflow-hidden" title={basket.product?.name} class:active={false}>
                     <div id={`product-check-${basket.productId}`} class="cardOverlay absolute inset-0 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 ease-in-out z-20 items-center justify-center hidden">
-                        <button type="button" class="transition duration-300 transform flex items-center shadow-sm hover:shadow-xl hover:scale-110" on:click={() => checkCard(basket.productId)}>
+                        <button type="button" class="cursor-pointer transition duration-300 transform flex items-center shadow-sm hover:shadow-xl hover:scale-110" on:click={() => checkCard(basket.productId)}>
                             <Icon data={faCircleCheck} scale={5} style="color: #9c33c1;"/>
                         </button>
                     </div>

@@ -24,10 +24,7 @@
 
             accessToken.set(null);
             refreshToken.set(null);
-
-            if (location.href.includes('/modify') || location.href.includes('/register')) {
-                navigate('/');
-            }
+            commonModule.increaseProgress(1, 'server');
         });
     }
 
@@ -56,11 +53,11 @@
                         <div slot="activator">
                             <button type="button" class="text-white hover:text-gray-300 flex items-center" on:click={() => {navigate('/payment')}}>
                                 <Icon data={faRectangleList} scale={1.5} class="mr-2"/>
-                                <span class="sr-only">Paid List</span>
+                                <span class="sr-only">Payment List</span>
                             </button>
                         </div>
                         <div class="bg-white rounded-lg shadow-md p-3">
-                            <div class="text-sm font-bold text-gray-900 mb-2">Paid List</div>
+                            <div class="text-sm font-bold text-gray-900 mb-2">Payment List</div>
                         </div>
                     </Tooltip>
                     <Tooltip>

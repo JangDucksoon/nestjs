@@ -108,7 +108,7 @@ export const commonModule = {
     },
     coonvertToNumber: (evt: Event) => {
         const input = evt.target as HTMLInputElement;
-        input.value = input.value.replace(/\D/g, '');
+        input.value = input.value.replace(/[^\d,]/g, '');
     },
     decodeJwtToken: (token: string|null|undefined) => {
         if (!token) return null;

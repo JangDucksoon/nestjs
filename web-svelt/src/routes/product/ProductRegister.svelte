@@ -11,9 +11,12 @@
     import { v4 as uuidv4 } from "uuid";
     import { format } from "date-fns";
     import { axiosMultipartInstance } from "../../module/axiosConfig";
+    import { accessToken } from "../../store";
 
     let thumbnail: string = '';
     let product: Partial<Product> = {}
+    let formatPrice: string = '';
+    let authSystem: boolean = commonModule.checkAdministrator();
 
     const submitHandler = () => {
         messageModule.confirm('Shall we proceed with product registration?', async (result: boolean) => {
@@ -66,6 +69,13 @@
         }
     }
 
+    $: product.price = Number(formatPrice.replace(/[\D]/g, ''));
+    $: formatPrice = !formatPrice ? '' : Number(formatPrice.replace(/[\D]/g, '')).toLocaleString();
+    $: {
+        $accessToken
+        authSystem = commonModule.checkAdministrator();
+    }
+
     onMount(() => {
         commonModule.increaseProgress(1);
     });
@@ -78,7 +88,7 @@
 {#if $progress}
     <p class="text-center text-4xl font-bold mb-4">{$progress}%</p>
     <ProgressLinear app={true} color='purple' progress={$progress}/>
-{:else if commonModule.checkAdministrator()}
+{:else if authSystem}
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-6">Registry Product</h1>
         <div class="flex gap-20">
@@ -94,7 +104,7 @@
                         <TextField label="Description" outlined hint="Wrtie the product description here" textarea rows={5} bind:value={product.description} required/>
                     </div>
                     <div class="mb-10">
-                        <TextField label="Price" outlined hint="Wrtie the product price here" bind:value={product.price} on:input={commonModule.coonvertToNumber} required/>
+                        <TextField label="Price" outlined hint="Wrtie the product price here" bind:value={formatPrice} on:input={commonModule.coonvertToNumber} required/>
                     </div>
                     <div class="mb-10">
                         <label for="image" class="block mb-2">Image:</label>

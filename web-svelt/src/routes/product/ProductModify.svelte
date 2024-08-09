@@ -7,13 +7,14 @@
     import { v4 as uuidv4 } from "uuid";
     import { format } from "date-fns";
     import TextField from "../../components/TextField/TextField.svelte";
-    import { progress } from "../../store";
+    import { accessToken, progress } from "../../store";
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
     import { commonModule } from "../../module/commonModule";
     import type Product from "../../types/Product";
     
     
     export let id: number;
+    let authSystem: boolean = commonModule.checkAdministrator();
 
     let product: Product = {
         id: 0,
@@ -33,13 +34,14 @@
 
     let error: string | null = null;
     let thumbnail: string | null = null;
+    let formatPrice: string = '0';
 
     const getProduct = async (id: number) => {
         commonModule.increaseProgress(1);
         const res = await axiosInstance.get<Product>(`product/${id}`)
-            debugger;
         if (res?.status === 200) {
             product = res.data;
+            formatPrice = product.price?.toLocaleString() || '0';
             loadedProduct = { ...res.data };
         }
     };
@@ -121,8 +123,14 @@
         });
     };
 
-    onMount(() => getProduct(id));
+    $: product.price = Number(formatPrice.replace(/[\D]/g, ''));
+    $: formatPrice = Number(formatPrice.replace(/[\D]/g, '')).toLocaleString();
+    $: {
+        $accessToken
+        authSystem = commonModule.checkAdministrator();
+    }
 
+    onMount(() => getProduct(id));
     onDestroy(() => commonModule.destroyProgress());
 </script>
 
@@ -131,7 +139,7 @@
     <ProgressLinear color="purple" progress={$progress}/>
 {:else if error}
     <p class="text-center text-red-500">{error}</p>
-{:else if !commonModule.checkAdministrator()}
+{:else if !authSystem}
     <p class="text-center font-bold text-red-500">You do not have permission to access.</p>
 {:else if product}
     <div class="container mx-auto px-4 py-8">
@@ -149,7 +157,7 @@
                         <TextField label="Description" outlined hint="Wrtie the product description here" textarea rows={5} bind:value={product.description} required/>
                     </div>
                     <div class="mb-10">
-                        <TextField label="Price" outlined hint="Wrtie the product price here" bind:value={product.price} required on:input={commonModule.coonvertToNumber}/>
+                        <TextField label="Price" outlined hint="Wrtie the product price here" bind:value={formatPrice} required on:input={commonModule.coonvertToNumber}/>
                     </div>
                     <div class="mb-10">
                         <label for="image" class="block mb-2">Image:</label>
