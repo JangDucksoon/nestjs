@@ -54,19 +54,39 @@ export class PaymentService {
 		});
 	}
 
-	findAllByUserId(userId: string, query: any) {
+	async findAllByUserId(userId: string, query: any) {
 		const limit = +query?.limit || 20;
 		const skip = +query?.skip || 0;
-		
 
-		return this.paymentRepository.createQueryBuilder('a')
+		console.log('limit: ' + limit);
+		console.log('skip: ' + skip);
+
+		const paymentList = this.paymentRepository.createQueryBuilder('a')
 			.innerJoin('a.product', 'b')
 			.select(['a.userId as userId', 'a.productId as productId', 'b.name as name', 'a.payDate as payDate', 'b.image_url as imageUrl'])
 			.addSelect('COUNT(1)', 'pCnt')
 			.addSelect('SUM(a.amount)', 'totalPrice')
 			.where('a.userId = :userId', { userId })
 			.groupBy('a.userId, a.productId, b.name, a.payDate, b.image_url')
-			.orderBy('a.payId', 'DESC').getRawMany();
+			.orderBy('a.payId', 'DESC');
+
+		const paymentListWithPaging = this.paymentRepository.manager.createQueryBuilder()
+		    .select('aa.*')
+			.from(`(${paymentList.getQuery()})`, 'aa')
+			.skip(skip)
+			.take(limit)
+			.setParameters(paymentList.getParameters());
+			
+
+		const paymemtCount = this.paymentRepository.manager.createQueryBuilder()
+		    .select('count(1)', 'cnt')
+			.from(`(${paymentList.getQuery()})`, 'aa')
+			.setParameters(paymentList.getParameters());
+
+
+		const [list, count] = [await paymentListWithPaging.getRawMany(), await paymemtCount.getRawOne()];
+
+		return { list, count: count.cnt };
 	}
 
 	findOne(id: number) {
