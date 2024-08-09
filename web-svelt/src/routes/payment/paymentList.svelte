@@ -11,6 +11,7 @@
     import { navigate } from "svelte-routing";
     import { faSortDown, faSortUp, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
     import Icon from 'svelte-awesome';
+    import PaymentModal from "./paymentModal.svelte";
     
 
     let PaymentList: UserPayment[] = [];
@@ -27,6 +28,12 @@
         priority: 'payDate'
     };
 
+    /*popup props*/
+    let popProductId: number;
+    let popPayDate: string;
+    let show: boolean = false;
+    let popUserId: string;
+
     const getPaymentList = async (cPageIndex = 0) => {
         commonModule.increaseProgress();
 
@@ -38,7 +45,14 @@
             PaymentList = res.data.list;
             totalCount = res.data.count;
         }
-    };
+    }
+
+    const openReturnPop = (productId: number, payDate: string) => {
+        popUserId = (commonModule.decodeJwtToken($accessToken) as any).username;
+        popProductId = productId;
+        popPayDate = payDate;
+        show = true;
+    }
 
     const oderbyHandler = (type: 'payDate'| 'totalPrice'| 'name') => {
         const condition = orderCondition[type] === 'DESC' ? 'ASC' : 'DESC';
@@ -125,6 +139,7 @@
                                     {/if}
                                 </div>
                             </th>
+                            <th class="py-2 px-4 border-b"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -138,6 +153,9 @@
                                 <td class="py-2 px-4 border-b text-right"><span class="font-bold text-blue-500">{item.totalPrice.toLocaleString()}</span> 원</td>
                                 <td class="py-2 px-4 border-b text-right"><span class="font-bold">{item.pCnt}</span> 개</td>
                                 <td class="py-2 px-4 border-b text-center">{item.payDate}</td>
+                                <td class="py-2 px-4 border-b text-center">
+                                    <button class="btn-red" on:click={() => openReturnPop(item.productId, item.payDate)}>return</button>
+                                </td>
                             </tr>
                         {/each}
                     </tbody>
@@ -145,5 +163,7 @@
                 <Pagination totalCount={totalCount} bind:pageIndex={pageIndex} bind:startIndex={startIndex} recordPerPage={recordPerPage} selectFunc={getPaymentList} pageSize={5}/>
             </div>
         </div>
+
+        <PaymentModal bind:show={show} payDate={popPayDate} productId={popProductId} userId={popUserId}></PaymentModal>
     {/if}
 </div>

@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
 import { Repository, DataSource} from 'typeorm';
 import { Basket } from 'src/basket/entities/basket.entity';
+import * as moment from 'moment';
 
 @Injectable()
 export class PaymentService {
@@ -94,7 +95,15 @@ export class PaymentService {
 		return { list, count: count.cnt };
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} payment`;
+	async findPaidProduct(userId: string, productId: number, payDate: string) {
+		const payDateObj = moment.parseZone(moment.parseZone(payDate).format('YYYY-MM-DD HH:mm:ss')).toDate();
+		const paidList = await this.paymentRepository.find({ 
+			where: {userId, productId, payDate: payDateObj},
+			relations: ['product']
+		 });
+
+		 console.log('findPaidProduct', paidList);
+
+		return null;
 	}
 }
