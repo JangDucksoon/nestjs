@@ -40,11 +40,15 @@ axiosInstance.interceptors.response.use(async (response: any) => {
                 } catch (refreshError) {
                     messageModule.error('Refresh token is invalid or expired, please login again', () => {
                         navigate('/login');
+                        accessToken.set(null);
+                        refreshToken.set(null);
                     });
                 }
             } else {
                 messageModule.alert('Please login first.', () => {
                     navigate('/login');
+                    accessToken.set(null);
+                    refreshToken.set(null);
                 }, 'info');
             }
         }
@@ -87,6 +91,7 @@ axiosMultipartInstance.interceptors.response.use(async (response: any) => {
                 return axiosMultipartInstance(err.config);
             } catch (refreshError) {
                 messageModule.error('Refresh token is invalid or expired, please login again', () => {
+
                     navigate('/login');
                 });
             }
