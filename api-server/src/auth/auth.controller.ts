@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Request, Get, Body } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Get, Body, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -8,11 +8,6 @@ import { CreateUserDto } from './dto/create-auth.dto';
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
-
-	@Post()
-	async singupUser(@Body() createUserDto: CreateUserDto) {
-		return this.authService.singupUser(createUserDto);
-	}
 
 	@UseGuards(LocalAuthGuard)
 	@Post('login')
@@ -32,4 +27,18 @@ export class AuthController {
 		return { message: 'Token is valid' };
 	}
 
+	@Post()
+	async singupUser(@Body() createUserDto: CreateUserDto) {
+		return this.authService.singupUser(createUserDto);
+	}
+
+	@Get(':userId')
+	async getUser(@Param("userId") userId: string) {
+		return this.authService.getUser(userId);
+	}
+
+	@Post('checkPassword/:id')
+	async checkPassword(@Param('id') id: string, @Body("password") password: string) {
+        return this.authService.checkPassword(+id, password);
+    }
 }

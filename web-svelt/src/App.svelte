@@ -17,6 +17,7 @@
     import ProgressLinear from "./components/ProgressLinear/ProgressLinear.svelte";
     import PaymentList from "./routes/payment/paymentList.svelte";
     import Signup from "./routes/auth/signup.svelte";
+    import UserInfo from "./routes/auth/userInfo.svelte";
     
 
     const logout = () => {
@@ -74,7 +75,7 @@
                     </Tooltip>
                     <Tooltip>
                         <div slot="activator">
-                            <button type="button" class="text-white hover:text-gray-300 flex items-center">
+                            <button type="button" class="text-white hover:text-gray-300 flex items-center" on:click={() => navigate('/auth/info')}>
                                 <Icon data={faAddressCard} scale={1.5} class="mr-2"/>
                                 <span class="sr-only">User Info</span>
                             </button>
@@ -125,7 +126,8 @@
         <Route path='/' component={Home}/>
         <Route path='/about' component={About}/>
         <Route path='/login' component={Login}/>
-        <Route path='/auth/signup' component={Signup}></Route>
+        <Route path='/auth/signup' component={Signup}/>
+        <Route path='auth/info' component={UserInfo}/>
         <Route path='/product' component={ProductList}/>
         <Route path='/product/:id' let:params>
             <Product id={+params.id}/>

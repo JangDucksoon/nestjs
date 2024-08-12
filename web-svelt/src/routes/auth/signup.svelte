@@ -19,7 +19,7 @@
             accessToken.set(access_token);
             refreshToken.set(refresh_token);
 
-            messageModule.alert("Login successful!", () => {
+            messageModule.alert("Sign up successful!", () => {
                 navigate('/');
             }, 'success');
         }
@@ -35,7 +35,7 @@
 {:else}
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-6">Sing Up</h1>
-        <form on:submit|preventDefault={() => {}} class="space-y-10">
+        <form on:submit|preventDefault={signupHandler} class="space-y-10">
             <div>
                 <TextField label="Username" bind:value={username} outlined hint="Write here your ID" required on:input={commonModule.filterHangleAndSpace}/>
             </div>
@@ -43,7 +43,7 @@
                 <TextField label="Password" type="password" bind:value={password} outlined hint="Write here your password" required on:input={commonModule.filterHangleAndSpace}/>
             </div>
             <div>
-                <button type="button" class="btn-purple w-full" on:click={signupHandler}>
+                <button type="submit" class="btn-purple w-full">
                     Sign up
                 </button>
             </div>

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from "bcrypt";
 import { Auth } from './entities/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -66,5 +66,19 @@ export class AuthService {
 		if (!token) return null;
 
 		return this.jwtService.decode(token);
+	}
+
+	getUser(userId: string) {
+		return this.userRepository.findOne({where:{username: userId}});
+	}
+
+	async checkPassword(id: number, password: string) {
+		const user: Auth = await this.userRepository.findOne({where:{id}});
+
+		if (user) {
+			return bcrypt.compare(password, user.hashedPassword);
+		} else {
+			throw new NotFoundException('User not found');
+		}
 	}
 }
