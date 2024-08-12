@@ -15,16 +15,14 @@ export class PaymentService {
 
 		@InjectRepository(Payment)
 		private readonly paymentRepository: Repository<Payment>,
-
-		private readonly dataSource: DataSource,
 	) { }
 
-	async create(createBasketDtoList: CreateBasketDto[]) {
+	async createPaymentList(createBasketDtoList: CreateBasketDto[]) {
 		if (!Array.isArray(createBasketDtoList) || createBasketDtoList.length === 0) {
 			throw new BadRequestException('No items found in the basket. Please add items to your cart before proceeding to payment.');
 		}
 
-		const paymentList: Payment[] = [];
+		const paymentList: CreatePaymentDto[] = [];
 
 		// 다건의 row 핸들링 시, transaction 적용
 		await this.paymentRepository.manager.transaction(async (manager) => {
@@ -35,8 +33,7 @@ export class PaymentService {
 
 				for (let i = 0; i < dto.productQuantity; i++) {
 					const payment = plainToClass(CreatePaymentDto, { productId, userId, amount });
-					const paymentEntity = this.paymentRepository.create(payment);
-					paymentList.push(paymentEntity);
+					paymentList.push(payment);
 				}
 
 				await manager.delete(Basket, { userId, productId });
@@ -52,6 +49,14 @@ export class PaymentService {
 			relations: ['product'],
 			order: { 'totalPrice': 'desc', 'productId': 'desc' }
 		});
+	}
+
+	async createPaymentNow(createPaymentDtoList: CreatePaymentDto[]) {
+		if (!Array.isArray(createPaymentDtoList) || createPaymentDtoList.length === 0) {
+			throw new BadRequestException('No items found');
+		}
+
+		return this.paymentRepository.insert(createPaymentDtoList);
 	}
 
 	async findAllByUserId(userId: string, query: any) {

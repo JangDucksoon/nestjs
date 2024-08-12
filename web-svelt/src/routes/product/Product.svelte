@@ -12,6 +12,7 @@
     import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
     import Icon from 'svelte-awesome';
     import messageModule from "../../module/swalConfig"
+    import type Payment from "../../types/Payment";
 
     export let id: number;
     
@@ -76,7 +77,45 @@
         if (res?.status === 201) {
             messageModule.alert("Product added to cart successfully", () => productQuantity = null);
         }
+    }
 
+    const purchaseNow = () => {
+        if ((productQuantity||0) <= 0) {
+            messageModule.alert("Quantity must be greater than 0", null, 'info');
+            return;
+        }
+
+        messageModule.confirm("Are you sure to purchase this product?", async () => {
+            let userId: string = '';
+            await commonModule.verifyToken(() => {
+                userId = (commonModule.decodeJwtToken($accessToken) as any).username;
+            });
+
+            if (!userId) {
+                messageModule.alert("Please login to purchase this product", null, 'info');
+                return;
+            }
+
+            const paymentList: Payment[] = [];
+            Array.from({length: productQuantity!}).forEach(_ => {
+                const payment: Payment = {
+                    userId,
+                    productId: product!.id,
+                    amount: product!.price,
+                }
+
+                paymentList.push(payment);
+            });
+
+            const res = await axiosInstance.post<boolean>("/payment/now", paymentList);
+
+            if (res?.status === 201) {
+                messageModule.alert("Purchase completed successfully", () => {
+                    getProduct(id);
+                    productQuantity = null;
+                });
+            }
+        });
     }
 
     const showTotalPrice = () => {
@@ -126,6 +165,12 @@
             <Tooltip>
                 <div slot="activator">
                     <button type="button" class="btn-blue mt-2 h-14 disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100" on:click={addToCart} disabled={(productQuantity||0) <= 0}>Add to Cart</button>
+                </div>
+                {showTotalPrice()}
+            </Tooltip>
+            <Tooltip>
+                <div slot="activator">
+                    <button type="button" class="btn-pink mt-2 h-14 disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100" on:click={purchaseNow} disabled={(productQuantity||0) <= 0}>Purchase Now</button>
                 </div>
                 {showTotalPrice()}
             </Tooltip>
