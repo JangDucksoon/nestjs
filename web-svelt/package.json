@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "set VITE_API_SERVER=http://localhost:3000&&vite",
-    "build": "set VITE_API_SERVER=https://port-0-nestjs-lzqb9hw022a068bf.sel4.cloudtype.app&&vite build",
+    "build": "VITE_API_SERVER=https://port-0-nestjs-lzqb9hw022a068bf.sel4.cloudtype.app&&vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
   },
