@@ -13,7 +13,7 @@ export class Auth {
     username: string;
 
     @Column({type: 'varchar', nullable: false})
-    hashed_password: string;
+    hashedPassword: string;
 
     @Column({type: 'varchar', nullable: false, default: 'user'})
     auth: string;

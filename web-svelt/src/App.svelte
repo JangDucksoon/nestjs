@@ -16,6 +16,7 @@
     import BasketList from "./routes/basket/BasketList.svelte";
     import ProgressLinear from "./components/ProgressLinear/ProgressLinear.svelte";
     import PaymentList from "./routes/payment/paymentList.svelte";
+    import Signup from "./routes/auth/signup.svelte";
     
 
     const logout = () => {
@@ -124,6 +125,7 @@
         <Route path='/' component={Home}/>
         <Route path='/about' component={About}/>
         <Route path='/login' component={Login}/>
+        <Route path='/auth/signup' component={Signup}></Route>
         <Route path='/product' component={ProductList}/>
         <Route path='/product/:id' let:params>
             <Product id={+params.id}/>

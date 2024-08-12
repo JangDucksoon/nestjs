@@ -1,22 +1,20 @@
 <script lang="ts">
-    import { navigate } from "svelte-routing";
+    import { onDestroy, onMount } from "svelte";
+    import { commonModule } from "../../module/commonModule";
+    import { accessToken, progress, refreshToken } from "../../store";
+    import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
     import TextField from "../../components/TextField/TextField.svelte";
     import { axiosInstance } from "../../module/axiosConfig";
     import messageModule from "../../module/swalConfig";
-    import { accessToken, progress, refreshToken } from "../../store";
-    import { commonModule } from "../../module/commonModule";
-    import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
-    import { onDestroy, onMount } from "svelte";
+    import { navigate } from "svelte-routing";
 
-    let username: string;
-    let password: string;
+    let username: string = "";
+    let password: string = "";
+    
+    const signupHandler = async () => {
+        const res = await axiosInstance.post<any>('/auth', {username, hashedPassword: password});
 
-    const loginHandler = async () => {
-        const user = { username, password };
-
-        const res = await axiosInstance.post<Record<'access_token'|'refresh_token'|'test_token', string>>("/auth/login", user);
-        
-        if (res.status === 200 || res.status === 201) {
+        if (res?.status === 201) {
             const { access_token, refresh_token } = res.data;
             accessToken.set(access_token);
             refreshToken.set(refresh_token);
@@ -33,11 +31,11 @@
 
 {#if $progress}
     <p class="text-center text-4xl font-bold mb-4">{$progress}%</p>
-    <ProgressLinear app={true} color="indigo" progress={$progress}/>
+    <ProgressLinear app={true} color="purple" progress={$progress}/>
 {:else}
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6">Login</h1>
-        <form on:submit|preventDefault={loginHandler} class="space-y-10">
+        <h1 class="text-3xl font-bold mb-6">Sing Up</h1>
+        <form on:submit|preventDefault={() => {}} class="space-y-10">
             <div>
                 <TextField label="Username" bind:value={username} outlined hint="Write here your ID" required on:input={commonModule.filterHangleAndSpace}/>
             </div>
@@ -45,10 +43,7 @@
                 <TextField label="Password" type="password" bind:value={password} outlined hint="Write here your password" required on:input={commonModule.filterHangleAndSpace}/>
             </div>
             <div>
-                <button type="submit" class="btn-green w-full">
-                    Login
-                </button>
-                <button type="button" class="btn-purple w-full" on:click={() => navigate('/auth/signup')}>
+                <button type="button" class="btn-purple w-full" on:click={signupHandler}>
                     Sign up
                 </button>
             </div>

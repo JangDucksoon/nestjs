@@ -143,21 +143,27 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {#each PaymentList as item, index (index)}
-                            <tr class="hover:bg-gray-50">
-                                <td class="text-center border-b">{(recordPerPage * pageIndex) + index + 1}</td>
-                                <td class="py-2 px-4 border-b">
-                                    <img src={`${properties.API_SERVER}/${item.imageUrl}`} alt="" class="w-16 h-16 object-cover"/>
-                                </td>
-                                <td class="py-2 px-4 border-b"><a href={`/product/${item.productId}`} class="font-bold hover:underline">{item.name}</a>
-                                <td class="py-2 px-4 border-b text-right"><span class="font-bold text-blue-500">{item.totalPrice.toLocaleString()}</span> 원</td>
-                                <td class="py-2 px-4 border-b text-right"><span class="font-bold">{item.pCnt}</span> 개</td>
-                                <td class="py-2 px-4 border-b text-center">{item.payDate}</td>
-                                <td class="py-2 px-4 border-b text-center">
-                                    <button class="btn-red" on:click={() => openReturnPop(item.productId, item.payDate)}>return</button>
-                                </td>
-                            </tr>
-                        {/each}
+                        {#if PaymentList.length === 0}
+                        <tr>
+                            <td colspan="7" class="py-4 px-4 text-center font-bold text-red-800">No payment data found.</td>
+                        </tr>
+                        {:else}
+                            {#each PaymentList as item, index (index)}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="text-center border-b">{(recordPerPage * pageIndex) + index + 1}</td>
+                                    <td class="py-2 px-4 border-b">
+                                        <img src={`${properties.API_SERVER}/${item.imageUrl}`} alt="" class="w-16 h-16 object-cover"/>
+                                    </td>
+                                    <td class="py-2 px-4 border-b"><a href={`/product/${item.productId}`} class="font-bold hover:underline">{item.name}</a>
+                                    <td class="py-2 px-4 border-b text-right"><span class="font-bold text-blue-500">{item.totalPrice.toLocaleString()}</span> 원</td>
+                                    <td class="py-2 px-4 border-b text-right"><span class="font-bold">{item.pCnt}</span> 개</td>
+                                    <td class="py-2 px-4 border-b text-center">{item.payDate}</td>
+                                    <td class="py-2 px-4 border-b text-center">
+                                        <button class="btn-red" on:click={() => openReturnPop(item.productId, item.payDate)}>return</button>
+                                    </td>
+                                </tr>
+                            {/each}
+                        {/if}
                     </tbody>
                 </table>
                 <Pagination totalCount={totalCount} bind:pageIndex={pageIndex} bind:startIndex={startIndex} recordPerPage={recordPerPage} selectFunc={getPaymentList} pageSize={5}/>
