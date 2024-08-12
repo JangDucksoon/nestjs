@@ -1,3 +1,3 @@
 export const web_config = {
-    'webOrigin': 'https://web-web-server-lzqb9hw022a068bf.sel4.cloudtype.app',
+    'webOrigin': process.env.WEB_ORIGIN || 'http://localhost:5173',
 }

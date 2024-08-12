@@ -1,5 +1,5 @@
 const properties = {
-    API_SERVER: 'https://port-0-nestjs-lzqb9hw022a068bf.sel4.cloudtype.app'
+    API_SERVER: import.meta.env.VITE_API_SERVER
 };
 
 export default properties;
