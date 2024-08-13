@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Request, Get, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Delete, Post, UseGuards, Request, Get, Body, Param, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -12,39 +12,48 @@ export class AuthController {
 
 	@UseGuards(LocalAuthGuard)
 	@Post('login')
-	async login(@Request() req: any) {
+	login(@Request() req: any) {
 		return this.authService.login(req.user);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Post('refresh')
-	async refreshAccessToken(@Request() req: any) {
+	refreshAccessToken(@Request() req: any) {
 		return this.authService.refreshAccessToken(req.user);
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Get('verifyToken')
-	async verifyToken() {
+	verifyToken() {
 		return { message: 'Token is valid' };
 	}
 
 	@Post()
-	async singupUser(@Body() createUserDto: CreateUserDto) {
+	singupUser(@Body() createUserDto: CreateUserDto) {
 		return this.authService.singupUser(createUserDto);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Get(':userId')
-	async getUser(@Param("userId") userId: string) {
+	getUser(@Param("userId") userId: string) {
 		return this.authService.getUser(userId);
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@Post('checkPassword/:id')
-	async checkPassword(@Param('id') id: number, @Body("password") password: string) {
+	checkPassword(@Param('id') id: number, @Body("password") password: string) {
         return this.authService.checkPassword(id, password);
     }
 
+	@UseGuards(JwtAuthGuard)
 	@Patch(':id')
-	async updateUser(@Param("id") id: number, @Body() updateUserDto: UpdateUserDto) {
+	updateUser(@Param("id") id: number, @Body() updateUserDto: UpdateUserDto) {
 		return this.authService.updateUser(id, updateUserDto);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Delete(':id')
+	deleteUser(@Param("id") id: number) {
+		return this.authService.deleteUser(id);
 	}
 }

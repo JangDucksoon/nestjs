@@ -31,6 +31,7 @@ axiosInstance.interceptors.response.use(async (response: any) => {
             messageModule.error(`<span class="font-bold">Login failed</span><br><span class="text-red-500 font-bold">[ Invalid username or password. ] (${err.response.status})<span>`);
         } else {
             const user: any = commonModule.decodeJwtToken(localStorage.getItem('refreshToken'));
+            
             if (user) {
                 try {
                     const res = await refreshAxiosInstance.post<Record<'access_token', string>>('/auth/refresh', user);

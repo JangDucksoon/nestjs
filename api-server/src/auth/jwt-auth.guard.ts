@@ -17,7 +17,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
             return false;
         }
         
-        const requiredAuth = this.reflector.get<string[] | string>('auth', context.getHandler())
+        const requiredAuth = this.reflector.get<string[] | string>('auth', context.getHandler());
         const request = context.switchToHttp().getRequest();
         const user = request?.user;
         const auth = user?.auth;

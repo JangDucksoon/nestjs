@@ -6,8 +6,6 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/create-auth.dto';
 import { UpdateUserDto } from './dto/update-auth.dto';
-import { Basket } from 'src/basket/entities/basket.entity';
-import { Payment } from 'src/payment/entities/payment.entity';
 
 
 @Injectable()
@@ -16,7 +14,7 @@ export class AuthService {
 		private jwtService: JwtService,
 		@InjectRepository(Auth)
 		private readonly userRepository: Repository<Auth>
-	) { }
+	) {}
 
 	async validateUser(username: string, password: string): Promise<any> {
 		const user = await this.userRepository.findOne({where: {username}});
@@ -65,12 +63,6 @@ export class AuthService {
         };
 	}
 
-	decodeAccessToken(token: string) {
-		if (!token) return null;
-
-		return this.jwtService.decode(token);
-	}
-
 	getUser(userId: string) {
 		return this.userRepository.findOne({where:{username: userId}});
 	}
@@ -89,5 +81,9 @@ export class AuthService {
 		await this.userRepository.update(id, updateUserDto);
 		const user2 = await this.userRepository.findOne({where:{id}});
 		return this.login(user2);
+	}
+
+	async deleteUser(id: number) {
+		return this.userRepository.delete(id);
 	}
 }

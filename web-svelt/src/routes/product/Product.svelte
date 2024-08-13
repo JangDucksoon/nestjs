@@ -85,7 +85,9 @@
             return;
         }
 
-        messageModule.confirm("Are you sure to purchase this product?", async () => {
+        messageModule.confirm("Are you sure to purchase this product?", async (result: boolean) => {
+            if (!result) return;
+            
             let userId: string = '';
             await commonModule.verifyToken(() => {
                 userId = (commonModule.decodeJwtToken($accessToken) as any).username;

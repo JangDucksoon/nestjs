@@ -19,7 +19,7 @@ export class Basket {
     @Column('integer', {nullable: false})
     totalPrice: number;
 
-    @ManyToOne(() => Auth, auth => auth.basket, { onUpdate: 'CASCADE' })
+    @ManyToOne(() => Auth, auth => auth.basket, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
     @JoinColumn({name: 'userId', referencedColumnName: 'username'})
     auth: Auth;
 

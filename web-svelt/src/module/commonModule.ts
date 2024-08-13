@@ -58,47 +58,6 @@ export const commonModule = {
             commonModule.intervalServerFunc = null;
         }
     },
-    isDate: function (date: string) {
-        if (!date) {
-            return false;
-        }
-        
-        const dateStr:string = date.toString().replace(/[/.-]/g, "");
-        
-        if (!dateStr) {
-            return false;
-        }
-        
-        if (dateStr.length != 8) {
-            return false;
-        }
-
-        if (isNaN(parseInt(dateStr))) {
-            return false;
-        }
-        
-        var dtYear: number = parseInt(dateStr.substring(0, 4));
-        var dtMonth: number = parseInt(dateStr.substring(4, 6));
-        var dtDay: number = parseInt(dateStr.substring(6, 8));
-        
-        if (dtMonth < 1 || dtMonth > 12) {
-            return false;
-        } else if (dtDay < 1 || dtDay > 31) {
-            return false;
-        } else if ((dtMonth == 4 || dtMonth == 6 || dtMonth == 9 || dtMonth == 11) && dtDay == 31) {
-            return false;
-        } else if (dtMonth == 2) {
-            const isleap = (dtYear % 4 == 0 && (dtYear % 100 != 0 || dtYear % 400 == 0));
-            if (dtDay > 29 || (dtDay == 29 && !isleap)) {
-                return false;
-            }
-        }
-        
-        return true;
-    },
-    isNumeric: (value: string|number) => {
-        return !isNaN(parseFloat(value.toString()));
-    },
     filterHangleAndSpace: (evt: Event) => {
         const input = evt.target as HTMLInputElement
         const value = input.value;

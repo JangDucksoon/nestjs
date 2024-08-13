@@ -16,7 +16,7 @@
 
         const res = await axiosInstance.post<Record<'access_token'|'refresh_token'|'test_token', string>>("/auth/login", user);
         
-        if (res.status === 200 || res.status === 201) {
+        if (res?.status === 200 || res?.status === 201) {
             const { access_token, refresh_token } = res.data;
             accessToken.set(access_token);
             refreshToken.set(refresh_token);

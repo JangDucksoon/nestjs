@@ -17,13 +17,14 @@
     let newPassword: string;
     let authorization: string;
     let modify_mode: boolean = false;
+    let delete_mode: boolean = false;
     let nameCheck: boolean = false;
 
     //팝업 관련 variables
     let show: boolean = false;
 
     const getUser = async () => {
-        commonModule.increaseProgress(0.1)
+        commonModule.increaseProgress(0.1);
         let userId: string = '';
         
         await commonModule.verifyToken(() => {
@@ -36,11 +37,10 @@
             }, 'info');
         }
 
-        const res = await axiosInstance.get<Record<string, any>>(`/auth/${userId}`);
-
+        const res = await axiosInstance.get<any>(`/auth/${userId}`);
         if (res?.status === 200) {
             if ((res.data as any) === '') {
-                messageModule.alert('User not found');
+                messageModule.alert('User not found', null, 'info');
                 navigate('/login');
                 return;
             }
@@ -67,6 +67,49 @@
         }
     }
 
+    const updateUser = () => {
+        messageModule.confirm('Are you sure you want to update your information?', async (result: boolean) => {
+            if (!result) return;
+
+            let updateUserInfo: any = {};
+
+            if (username !== newUsername) {
+                updateUserInfo = {username: newUsername};
+            }
+
+            if (newPassword) {
+                updateUserInfo = {...updateUserInfo, hashedPassword: newPassword};
+            }
+
+            const updateResult = await axiosInstance.patch<Record<'access_token'|'refresh_token', 'string'>>(`/auth/${id}`, updateUserInfo);
+                
+            if (updateResult?.status === 200) {
+                const {access_token, refresh_token} = updateResult.data;
+                messageModule.alert('Update successful', () => {
+                    accessToken.set(access_token);
+                    refreshToken.set(refresh_token);
+                    getUser();
+                    modify_mode = false;
+                });
+            }
+        });
+    }
+
+    const deleteUser = () => {
+        messageModule.confirm('Are you sure you want to delete your account?', async (result: boolean) => {
+            if (!result) return;
+
+            const deleteResult = await axiosInstance.delete(`/auth/${id}`);
+
+            if (deleteResult?.status === 200) {
+                accessToken.set(null);
+                refreshToken.set(null);
+
+                messageModule.alert('Delete successful');
+            }
+        });
+    }
+
     const checkPassword = async (obj: CustomEvent<{password: string}>) => {
         let password: string = '';
 
@@ -79,38 +122,18 @@
 
         const res = await axiosInstance.post<boolean>(`/auth/checkPassword/${id}`, { password });
         if (res?.status === 201 && res.data) {
-            messageModule.confirm('Are you sure you want to update your information?', async (result: boolean) => {
-                if (!result) return;
-
-                let updateUserInfo: any = {};
-
-                if (username !== newUsername) {
-                    updateUserInfo = {username: newUsername};
-                }
-
-                if (newPassword) {
-                    updateUserInfo = {...updateUserInfo, hashedPassword: newPassword};
-                }
-
-                const updateResult = await axiosInstance.patch<Record<'access_token'|'refresh_token', 'string'>>(`/auth/${id}`, updateUserInfo);
-                    
-                if (updateResult?.status === 200) {
-                    const {access_token, refresh_token} = updateResult.data;
-                    messageModule.alert('Update successful', () => {
-                        accessToken.set(access_token);
-                        refreshToken.set(refresh_token);
-                        getUser();
-                        modify_mode = false;
-                    });
-                }
-            });
+            if (delete_mode) {
+                deleteUser();
+            } else {
+                updateUser();
+            }
         } else if (!res.data) {
             messageModule.alert('Password is incorrect', null, 'warning');
         }
     }
 
-    const openPasswordModal = () => {
-        if (username === newUsername && !newPassword) {
+    const openPasswordModal = (deleteFlag: boolean = false) => {
+        if (username === newUsername && !newPassword && !deleteFlag) {
             messageModule.alert('No changes detected', null, 'info');
             return;
         }
@@ -122,6 +145,7 @@
             }
         }
 
+        delete_mode = deleteFlag;
         show = true;
     }
 
@@ -133,10 +157,8 @@
         newPassword = '';
     }
 
-    $: {
-        newUsername
-        nameCheck = false;
-    }
+    $: nameCheck = false, newUsername;
+    $: username === newUsername ? nameCheck = true : null;
 
     $: if (!$accessToken) {
         navigate('/');
@@ -175,6 +197,7 @@
                             </div>
                         </div>
                         <button class="btn-orange w-full" on:click={() => modify_mode = true}>Modify User Information</button>
+                        <button class="btn-red w-full" on:click={() => openPasswordModal(true)}>Account termination</button>
                     </div>
                 </div>
             </div>
@@ -218,12 +241,12 @@
                                 <p class="text-lg font-semibold text-white">{authorization}</p>
                             </div>
                         </div>
-                        <button type="button" class="btn-cyan w-full" on:click={openPasswordModal}>Modify Information</button>
+                        <button type="button" class="btn-cyan w-full" on:click={() => openPasswordModal()}>Modify Information</button>
                         <button type="button" class="btn-orange w-full" on:click={() => modify_mode = false}>User Information</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <PasswordModal bind:show={show} on:sendPassword={checkPassword}/>
 {/if}
+<PasswordModal bind:show={show} on:sendPassword={checkPassword}/>
