@@ -4,8 +4,8 @@ import { Auth } from './entities/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { plainToInstance } from 'class-transformer';
 import { CreateUserDto } from './dto/create-auth.dto';
+import { UpdateUserDto } from './dto/update-auth.dto';
 
 
 @Injectable()
@@ -36,6 +36,7 @@ export class AuthService {
 	}
 
 	async singupUser(createuserDto: CreateUserDto){
+		console.log('createuserDto', createuserDto);
 		if (!createuserDto.username || !createuserDto.hashedPassword) {
 			throw new BadRequestException('Please enter your username and password.');
 		}
@@ -80,5 +81,11 @@ export class AuthService {
 		} else {
 			throw new NotFoundException('User not found');
 		}
+	}
+
+	async updateUser(id: number, updateUserDto: UpdateUserDto) {
+		await this.userRepository.update(id, updateUserDto);
+		const user = await this.userRepository.findOne({where:{id}});
+		return this.login(user);
 	}
 }

@@ -3,7 +3,7 @@
     import TextField from "../../components/TextField/TextField.svelte";
     import { axiosInstance } from "../../module/axiosConfig";
     import messageModule from "../../module/swalConfig";
-    import { accessToken, progress } from "../../store";
+    import { accessToken, progress, refreshToken } from "../../store";
     import { commonModule } from "../../module/commonModule";
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
     import { onDestroy, onMount } from "svelte";
@@ -33,7 +33,7 @@
         if (!userId) {
             messageModule.alert('please login first', () => {
                 navigate('/login');
-            });
+            }, 'info');
         }
 
         const res = await axiosInstance.get<Record<string, any>>(`/auth/${userId}`);
@@ -67,44 +67,59 @@
         }
     }
 
-    const updateUserInfo = (obj: any) => {
+    const checkPassword = async (obj: CustomEvent<{password: string}>) => {
         let password: string = '';
 
-        if (!obj?.detail?.password) {
+        if (obj?.detail?.password) {
+            password = obj.detail.password;   
+        } else {
             messageModule.alert('Please enter a password', null, 'warning');
             return;
-        } else {
-            password = obj.detail.password;
         }
 
-        messageModule.confirm('Are you sure you want to update your information?', async (result: boolean) => {
-            if (!result) return;
+        const res = await axiosInstance.post<boolean>(`/auth/checkPassword/${id}`, { password });
+        if (res?.status === 201 && res.data) {
+            messageModule.confirm('Are you sure you want to update your information?', async (result: boolean) => {
+                if (!result) return;
 
-            let updateUserInfo = {
-                id,
-                username: '',
-                hashedPassword: ''
-            };
+                let updateUserInfo: any = {};
 
-            if (username !== newUsername) {
-                if (!nameCheck) {
-                    messageModule.alert('Please check the username', null, 'warning');
-                    return;
+                if (username !== newUsername) {
+                    updateUserInfo = {username: newUsername};
                 }
-                
-                updateUserInfo.username = newUsername;
-            }
 
-            if (newPassword) {
-                updateUserInfo.hashedPassword = newPassword
-            }
-        });
+                if (newPassword) {
+                    updateUserInfo = {...updateUserInfo, hashedPassword: newPassword};
+                }
+
+                const updateResult = await axiosInstance.patch<Record<'access_token'|'refresh_token', 'string'>>(`/auth/${id}`, updateUserInfo);
+                    
+                if (updateResult?.status === 200) {
+                    const {access_token, refresh_token} = updateResult.data;
+                    messageModule.alert('Update successful', () => {
+                        accessToken.set(access_token);
+                        refreshToken.set(refresh_token);
+                        getUser();
+                        modify_mode = false;
+                    });
+                }
+            });
+        } else if (!res.data) {
+            messageModule.alert('Password is incorrect', null, 'warning');
+        }
     }
 
     const openPasswordModal = () => {
         if (username === newUsername && !newPassword) {
             messageModule.alert('No changes detected', null, 'info');
             return;
+        }
+
+        if (username !== newUsername) {
+            if (!nameCheck) {
+                messageModule.alert('You need to perform a duplicate check for the username.', null, 'warning');
+                return;
+            }
         }
 
         show = true;
@@ -185,14 +200,14 @@
                                 <p class="text-sm font-medium text-white opacity-70">User Name</p>
                                 <TextField outlined bind:value={newUsername} hint="Please enter the new user name" on:input={commonModule.filterHangleAndSpace}/>
                             </div>
-                            <button class="ml-10 hover:scale-150 disabled:opacity-50" disabled={nameCheck} on:click={checkDuplicateUsername}>
+                            <button type="button" class="ml-10 transform duration-300 ease-in-out hover:scale-150 disabled:opacity-50 disabled:scale-100" disabled={nameCheck} on:click={checkDuplicateUsername}>
                                 <Icon data={faUserCheck} class="text-white mr-3" scale={1.5}/>
                             </button>
                         </div>
                         <div class="flex items-center bg-white bg-opacity-20 rounded-lg p-3">
                             <Icon data={faKey} class="text-white mr-3" scale={1.5}/>
                             <div>
-                                <p class="text-sm font-medium text-white opacity-70">Password</p>
+                                <p class="text-sm font-medium text-white opacity-70">New Password</p>
                                 <TextField outlined bind:value={newPassword} hint="Please enter the new password" type="password" on:input={commonModule.filterHangleAndSpace}/>
                             </div>
                         </div>
@@ -203,12 +218,12 @@
                                 <p class="text-lg font-semibold text-white">{authorization}</p>
                             </div>
                         </div>
-                        <button class="btn-cyan w-full" on:click={openPasswordModal}>Modify Information</button>
-                        <button class="btn-orange w-full" on:click={() => modify_mode = false}>User Information</button>
+                        <button type="button" class="btn-cyan w-full" on:click={openPasswordModal}>Modify Information</button>
+                        <button type="button" class="btn-orange w-full" on:click={() => modify_mode = false}>User Information</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <PasswordModal bind:show={show} on:sendPassword={updateUserInfo}/>
+    <PasswordModal bind:show={show} on:sendPassword={checkPassword}/>
 {/if}

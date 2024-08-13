@@ -1,8 +1,9 @@
-import { Controller, Post, UseGuards, Request, Get, Body, Param } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Get, Body, Param, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { CreateUserDto } from './dto/create-auth.dto';
+import { UpdateUserDto } from './dto/update-auth.dto';
 
 
 @Controller('auth')
@@ -38,7 +39,12 @@ export class AuthController {
 	}
 
 	@Post('checkPassword/:id')
-	async checkPassword(@Param('id') id: string, @Body("password") password: string) {
-        return this.authService.checkPassword(+id, password);
+	async checkPassword(@Param('id') id: number, @Body("password") password: string) {
+        return this.authService.checkPassword(id, password);
     }
+
+	@Patch(':id')
+	async updateUser(@Param("id") id: number, @Body() updateUserDto: UpdateUserDto) {
+		return this.authService.updateUser(id, updateUserDto);
+	}
 }
