@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/create-auth.dto';
 import { UpdateUserDto } from './dto/update-auth.dto';
+import { Basket } from 'src/basket/entities/basket.entity';
+import { Payment } from 'src/payment/entities/payment.entity';
 
 
 @Injectable()
@@ -85,7 +87,7 @@ export class AuthService {
 
 	async updateUser(id: number, updateUserDto: UpdateUserDto) {
 		await this.userRepository.update(id, updateUserDto);
-		const user = await this.userRepository.findOne({where:{id}});
-		return this.login(user);
+		const user2 = await this.userRepository.findOne({where:{id}});
+		return this.login(user2);
 	}
 }
