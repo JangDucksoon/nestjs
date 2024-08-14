@@ -38,7 +38,7 @@
         commonModule.increaseProgress();
 
         const skip = cPageIndex * recordPerPage;
-        const userId = (commonModule.decodeJwtToken($accessToken) as any).username;
+        const userId = (commonModule.decodeJwtToken($accessToken) as any)?.username;
         const res = await axiosInstance.get<{list: UserPayment[], count: number}>(`/payment/${userId}?limit=${recordPerPage}&skip=${skip}&search=${searchText}`, {params: orderCondition});
 
         if (res?.status === 200) {

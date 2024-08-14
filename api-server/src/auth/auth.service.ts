@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/create-auth.dto';
 import { UpdateUserDto } from './dto/update-auth.dto';
+import { EncryptionUtil } from 'src/utils/EncryptionUtil';
 
 
 @Injectable()
@@ -26,8 +27,13 @@ export class AuthService {
 		return null;
 	}
 
-	login(user: any) {
-		const payload = {username: user.username, sub: user.id, auth: user.auth};
+	async login(user: any, sessionId: string) {
+		if (!sessionId) {
+			throw new NotFoundException("can not Login without session ID");
+		}
+
+		const encryptedSessionId = EncryptionUtil.encrypt(sessionId);
+		const payload = {username: user.username, sub: user.id, auth: user.auth, sessionId: encryptedSessionId};
 		
 		return {
             access_token: this.jwtService.sign(payload, { expiresIn: '60m' }),
@@ -36,7 +42,6 @@ export class AuthService {
 	}
 
 	async singupUser(createuserDto: CreateUserDto){
-		console.log('createuserDto', createuserDto);
 		if (!createuserDto.username || !createuserDto.hashedPassword) {
 			throw new BadRequestException('Please enter your username and password.');
 		}
@@ -52,11 +57,18 @@ export class AuthService {
 			where: {id: result.identifiers[0].id}
 		});
 
-		return this.login(newUser);
+		return this.login(newUser, '');
 	}
 
-	refreshAccessToken(user: any) {
-		const payload = {username: user.username, sub: user.sub, auth: user.auth};
+	async refreshAccessToken(user: any, sessionId: string) {
+		console.log('refresh session ID: ', sessionId);
+		if (!sessionId) {
+			throw new NotFoundException("can not Login without session ID");
+		}
+		
+		console.log('refresh session ID: ', sessionId);
+        const encryptedSessionId = EncryptionUtil.encrypt(sessionId);
+		const payload = {username: user.username, sub: user.sub, auth: user.auth, sessionId: encryptedSessionId};
         
         return {
             access_token: this.jwtService.sign(payload, { expiresIn: '60m' })
@@ -80,7 +92,7 @@ export class AuthService {
 	async updateUser(id: number, updateUserDto: UpdateUserDto) {
 		await this.userRepository.update(id, updateUserDto);
 		const user2 = await this.userRepository.findOne({where:{id}});
-		return this.login(user2);
+		return this.login(user2, '');
 	}
 
 	async deleteUser(id: number) {

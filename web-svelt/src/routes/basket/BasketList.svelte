@@ -18,7 +18,7 @@
 
     const getBasketList = async () => {
         commonModule.increaseProgress(0.1);
-        const userId: string = (commonModule.decodeJwtToken($accessToken) as any).username;
+        const userId: string = (commonModule.decodeJwtToken($accessToken) as any)?.username;
         const res = await axiosInstance.get<Basket[]>(`basket/${userId}`);
 
         if (res?.status === 200) {
@@ -146,7 +146,7 @@
     }
 
 
-    $: $accessToken ? void(0) : navigate('/product');
+    $: $accessToken ? null : navigate('/product');
     $: totalPrice = basketList.reduce((acc, curr) => acc + curr.totalPrice, 0);
     $: checkedPrice = basketList.filter(b => checkedList.includes(b.productId)).reduce((acc, curr) => acc + curr.totalPrice, 0);
 

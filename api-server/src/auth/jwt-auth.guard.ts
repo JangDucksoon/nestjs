@@ -1,18 +1,20 @@
-import { ForbiddenException, Inject, Injectable, UnauthorizedException, type ExecutionContext } from "@nestjs/common";
+import { ForbiddenException, Injectable, UnauthorizedException, type ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
+import { EncryptionUtil } from "src/utils/EncryptionUtil";
 
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
     constructor(
-        private readonly reflector: Reflector,
+        private readonly reflector: Reflector
     ) {
         super();
     }
 
     async canActivate(context: ExecutionContext) {
         const isValid = await super.canActivate(context);
+        console.log('isvalid', isValid);
         if (!isValid) {
             return false;
         }
@@ -20,6 +22,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         const requiredAuth = this.reflector.get<string[] | string>('auth', context.getHandler());
         const request = context.switchToHttp().getRequest();
         const user = request?.user;
+        console.log("user :::: ", user);
+        if (!user?.sessionId) return false;
+        console.log('request.sessionID ::: ', request.sessionID);
+        console.log('user.sessionId ::: ', user.sessionId);
+        console.log('EncryptionUtil.decrypt(user.sessionId) ::: ', EncryptionUtil.decrypt(user.sessionId));
+        console.log('request.sessionID !== EncryptionUtil.decrypt(user.sessionId) ::: ', request.sessionID !== EncryptionUtil.decrypt(user.sessionId));
+        if (request.sessionID !== EncryptionUtil.decrypt(user.sessionId)) {
+            throw new UnauthorizedException("different sessionID");
+        }
+
         const auth = user?.auth;
 
         if (requiredAuth) {

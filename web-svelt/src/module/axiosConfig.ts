@@ -8,7 +8,8 @@ import { navigate } from "svelte-routing";
 export const axiosInstance = axios.create({
     baseURL: properties.API_SERVER + '/api',
     timeout: 3000,
-    headers: {'Content-Type': 'application/json'}
+    headers: {'Content-Type': 'application/json'},
+    withCredentials: true
 });
 
 axiosInstance.interceptors.request.use(async (config: any) => {
@@ -64,7 +65,8 @@ axiosInstance.interceptors.response.use(async (response: any) => {
 export const axiosMultipartInstance = axios.create({
     baseURL: properties.API_SERVER + '/api',
     timeout: 3000,
-    headers: { 'Content-Type': 'multipart/form-data'}
+    headers: { 'Content-Type': 'multipart/form-data'},
+    withCredentials: true
 });
 
 
@@ -92,7 +94,6 @@ axiosMultipartInstance.interceptors.response.use(async (response: any) => {
                 return axiosMultipartInstance(err.config);
             } catch (refreshError) {
                 messageModule.error('Refresh token is invalid or expired, please login again', () => {
-
                     navigate('/login');
                 });
             }
@@ -110,5 +111,6 @@ axiosMultipartInstance.interceptors.response.use(async (response: any) => {
 const refreshAxiosInstance = axios.create({
     baseURL: properties.API_SERVER + '/api',
     timeout: 3000,
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('refreshToken')}` }
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('refreshToken')}` },
+    withCredentials: true
 });
