@@ -12,7 +12,12 @@ async function bootstrap() {
 	EncryptionUtil.initialize(process.env.CRYPTO_KEY);
 	const app = await NestFactory.create(AppModule);
 	app.setGlobalPrefix('api');
-	app.enableCors({ origin: web_config.webOrigin, credentials: true });
+	app.enableCors({ 
+		origin: web_config.webOrigin,
+		credentials: true,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  		allowedHeaders: ['Content-Type', 'Authorization'],
+	 });
 	app.useGlobalPipes(new ValidationPipe({ transform: true }));
 	app.use(session({
 		secret: 'test',

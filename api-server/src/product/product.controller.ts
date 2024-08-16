@@ -28,6 +28,7 @@ export class ProductController {
 
 	@Get()
 	findAll(@Query() query: any, @Request() req: any) {
+		console.log('req sessionID: ', req.sessionID);
 		return this.productService.findAll(query);
 	}
 
