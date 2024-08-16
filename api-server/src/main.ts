@@ -22,6 +22,7 @@ async function bootstrap() {
 		cookie: {
 			secure: process.env.NODE_ENV === 'production'? true : false,
 			sameSite: process.env.NODE_ENV === 'production'? 'none' : 'lax',
+			domain: process.env.NODE_ENV === 'production'? '.cloudtype.app' : 'localhost',
 			httpOnly: true,
 		}
 	}));
