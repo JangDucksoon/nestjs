@@ -41,7 +41,7 @@ export class AuthService {
         };
 	}
 
-	async singupUser(createuserDto: CreateUserDto){
+	async singupUser(createuserDto: CreateUserDto, sessionId: string) {
 		if (!createuserDto.username || !createuserDto.hashedPassword) {
 			throw new BadRequestException('Please enter your username and password.');
 		}
@@ -52,21 +52,21 @@ export class AuthService {
 			throw new ConflictException('Username already taken');
 		}
 		
-		const result = await this.userRepository.insert(createuserDto);
-		const newUser = await this.userRepository.findOne({
-			where: {id: result.identifiers[0].id}
-		});
+		return this.userRepository.manager.transaction(async (manager) => {
+			const result = await manager.insert(Auth, createuserDto);
+			const newUser = await manager.findOne(Auth, {
+				where: {id: result.identifiers[0].id}
+			});
 
-		return this.login(newUser, '');
+			return this.login(newUser, sessionId);
+		});
 	}
 
 	async refreshAccessToken(user: any, sessionId: string) {
-		console.log('refresh session ID: ', sessionId);
 		if (!sessionId) {
 			throw new NotFoundException("can not Login without session ID");
 		}
 		
-		console.log('refresh session ID: ', sessionId);
         const encryptedSessionId = EncryptionUtil.encrypt(sessionId);
 		const payload = {username: user.username, sub: user.sub, auth: user.auth, sessionId: encryptedSessionId};
         
@@ -89,10 +89,12 @@ export class AuthService {
 		}
 	}
 
-	async updateUser(id: number, updateUserDto: UpdateUserDto) {
-		await this.userRepository.update(id, updateUserDto);
-		const user2 = await this.userRepository.findOne({where:{id}});
-		return this.login(user2, '');
+	async updateUser(id: number, updateUserDto: UpdateUserDto, sessionID: string) {
+		return this.userRepository.manager.transaction(async (manager) => {
+			await manager.update(Auth, id, updateUserDto);
+			const user = await manager.findOne(Auth, {where:{id}});
+			return this.login(user, sessionID);
+		});
 	}
 
 	async deleteUser(id: number) {

@@ -15,7 +15,6 @@ export class ProductController {
 	@SetMetadata('auth', 'sys')
 	@UseGuards(JwtAuthGuard)
 	async create(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File, @Request() req: any) {
-		console.log('axios multi :::', req.sessionID);
 		if (file) {
 			if (createProductDto.image_url) {
 				await uploadImage(file, createProductDto.image_url, 'products');
@@ -29,7 +28,6 @@ export class ProductController {
 
 	@Get()
 	findAll(@Query() query: any, @Request() req: any) {
-		console.log('req.sessionID :::', req.sessionID);
 		return this.productService.findAll(query);
 	}
 
@@ -64,7 +62,6 @@ export class ProductController {
 	@UseGuards(JwtAuthGuard)
 	@SetMetadata('auth', ['sys'])
 	async remove(@Param('id') id: string) {
-		console.log('remove product');
 		try {
 			const product = await this.productService.findPreImage(+id);	//기존에 등록된 image_url 찾기
 			if (product) {

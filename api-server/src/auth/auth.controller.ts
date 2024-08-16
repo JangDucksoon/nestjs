@@ -29,8 +29,8 @@ export class AuthController {
 	}
 
 	@Post()
-	singupUser(@Body() createUserDto: CreateUserDto) {
-		return this.authService.singupUser(createUserDto);
+	singupUser(@Body() createUserDto: CreateUserDto, @Request() req: any) {
+		return this.authService.singupUser(createUserDto, req.sessionID);
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -47,8 +47,8 @@ export class AuthController {
 
 	@UseGuards(JwtAuthGuard)
 	@Patch(':id')
-	updateUser(@Param("id") id: number, @Body() updateUserDto: UpdateUserDto) {
-		return this.authService.updateUser(id, updateUserDto);
+	updateUser(@Param("id") id: number, @Body() updateUserDto: UpdateUserDto, @Request() req: any) {
+		return this.authService.updateUser(id, updateUserDto, req.sessionID);
 	}
 
 	@UseGuards(JwtAuthGuard)

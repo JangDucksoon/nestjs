@@ -14,7 +14,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     async canActivate(context: ExecutionContext) {
         const isValid = await super.canActivate(context);
-        
+
         if (!isValid) {
             return false;
         }
@@ -23,9 +23,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         const request = context.switchToHttp().getRequest();
         const user = request?.user;
         const decryptedSessionId = EncryptionUtil.decrypt(user.sessionId);
-        
-        console.log('jwt session Id', request.sessionID);
-        console.log('user session ID', decryptedSessionId);
         
         if (!user?.sessionId) return false;
         if (request.sessionID !== decryptedSessionId) {

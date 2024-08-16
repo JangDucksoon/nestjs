@@ -113,7 +113,6 @@
 
             if (res?.status === 201) {
                 messageModule.alert("Purchase completed successfully", () => {
-                    getProduct(id);
                     productQuantity = null;
                 });
             }

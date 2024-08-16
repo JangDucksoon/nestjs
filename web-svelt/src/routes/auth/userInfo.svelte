@@ -82,7 +82,6 @@
             }
 
             const updateResult = await axiosInstance.patch<Record<'access_token'|'refresh_token', 'string'>>(`/auth/${id}`, updateUserInfo);
-                
             if (updateResult?.status === 200) {
                 const {access_token, refresh_token} = updateResult.data;
                 messageModule.alert('Update successful', () => {

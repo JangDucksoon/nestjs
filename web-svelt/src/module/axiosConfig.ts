@@ -49,7 +49,6 @@ axiosInstance.interceptors.response.use(async (response: any) => {
                 }
             } else {
                 navigate('/login');
-                
                 messageModule.alert('Please login first.', () => {
                     accessToken.set(null);
                     refreshToken.set(null);
@@ -113,6 +112,16 @@ axiosMultipartInstance.interceptors.response.use(async (response: any) => {
 const refreshAxiosInstance = axios.create({
     baseURL: properties.API_SERVER + '/api',
     timeout: 3000,
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('refreshToken')}` },
+    headers: { 'Content-Type': 'application/json' },
     withCredentials: true
 });
+
+refreshAxiosInstance.interceptors.request.use((config: any) => {
+    const token = localStorage.getItem('refreshToken');
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+}, (err) => {
+    return Promise.reject(err);
+})
