@@ -20,6 +20,8 @@ async function bootstrap() {
 		saveUninitialized: true,
 		rolling: true,
 		cookie: {
+			domain: process.env.NODE_ENV === 'production'? '.sel4.cloudtype.app' : 'localhost',
+			path: '/',
 			secure: process.env.NODE_ENV === 'production'? true : false,
 			httpOnly: true
 		}
