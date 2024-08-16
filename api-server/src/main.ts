@@ -21,7 +21,8 @@ async function bootstrap() {
 		rolling: true,
 		cookie: {
 			secure: process.env.NODE_ENV === 'production'? true : false,
-			httpOnly: true
+			sameSite: process.env.NODE_ENV === 'production'? 'none' : 'lax',
+			httpOnly: true,
 		}
 	}));
 	await app.listen(3000);
