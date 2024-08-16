@@ -40,15 +40,17 @@ axiosInstance.interceptors.response.use(async (response: any) => {
                     accessToken.set(access_token);
                     return axiosInstance(err.config);
                 } catch (refreshError) {
+                    navigate('/login');
+
                     messageModule.error('Refresh token is invalid or expired, please login again', () => {
-                        navigate('/login');
                         accessToken.set(null);
                         refreshToken.set(null);
                     });
                 }
             } else {
+                navigate('/login');
+                
                 messageModule.alert('Please login first.', () => {
-                    navigate('/login');
                     accessToken.set(null);
                     refreshToken.set(null);
                 }, 'info');

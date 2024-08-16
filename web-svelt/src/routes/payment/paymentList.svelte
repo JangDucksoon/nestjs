@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
     import ProgressLinear from "../../components/ProgressLinear/ProgressLinear.svelte";
-    import { progress } from "../../store";
+    import { progress, refreshToken } from "../../store";
     import { commonModule } from "../../module/commonModule";
     import { axiosInstance } from "../../module/axiosConfig";
     import { accessToken } from "../../store";

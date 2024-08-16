@@ -4,7 +4,7 @@ import type { CreateBasketDto } from 'src/basket/dto/create-basket.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
-import { Repository, DataSource, In} from 'typeorm';
+import { Repository, In} from 'typeorm';
 import { Basket } from 'src/basket/entities/basket.entity';
 
 @Injectable()

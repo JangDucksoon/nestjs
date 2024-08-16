@@ -19,7 +19,6 @@ export class AuthController {
 	@UseGuards(JwtAuthGuard)
 	@Post('refresh')
 	refreshAccessToken(@Request() req: any) {
-		console.log('controller: req session ID: ', req.sessionID);
 		return this.authService.refreshAccessToken(req.user, (req.sessionID as string));
 	}
 

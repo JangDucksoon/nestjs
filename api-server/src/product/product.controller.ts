@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, BadRequestException, Query, UseGuards, SetMetadata } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, BadRequestException, Query, UseGuards, SetMetadata, Request } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -14,7 +14,8 @@ export class ProductController {
 	@UseInterceptors(FileInterceptor('file'))
 	@SetMetadata('auth', 'sys')
 	@UseGuards(JwtAuthGuard)
-	async create(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File) {
+	async create(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File, @Request() req: any) {
+		console.log('axios multi :::', req.sessionID);
 		if (file) {
 			if (createProductDto.image_url) {
 				await uploadImage(file, createProductDto.image_url, 'products');
@@ -27,7 +28,8 @@ export class ProductController {
 	}
 
 	@Get()
-	findAll(@Query() query: any) {
+	findAll(@Query() query: any, @Request() req: any) {
+		console.log('req.sessionID :::', req.sessionID);
 		return this.productService.findAll(query);
 	}
 
